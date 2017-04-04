@@ -26,10 +26,12 @@ vignettes/*.pdf
 *.knit.md
 # Packrat library folders
 packrat/lib*/
+# Packrat source folder
 packrat/src/
 # Raw data
 /data-raw/*.xls*
 .Rproj.user
 # Data
 /data
+*.csv
 inst/doc
