@@ -33,8 +33,6 @@ plot_dtoc_line <- function(df, trusts = c("CHELSEA.AND.WESTMINS")) {
     ggplot2::ggplot(data=dfm[dfm$Trust %in% trusts,],
            ggplot2::aes(x=Date, y=DTOC, group=Trust)) +
       ggplot2::geom_line(ggplot2::aes(color=Trust)) +
-      ggplot2::geom_point(ggplot2::aes(color=Trust)) +
-      ggplot2::geom_errorbar(ggplot2::stat = "hline", ggplot2::yintercept = "median",
-                             ggplot2::width=0.8, ggplot2::aes(ymax=..y..,ymin=..y..))
+      ggplot2::geom_point(ggplot2::aes(color=Trust))
   
 }
