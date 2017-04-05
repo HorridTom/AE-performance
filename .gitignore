@@ -35,5 +35,7 @@ packrat/src/
 /data
 *.csv
 inst/doc
-# Documents pdf
-/Documents/
+# Documents
+/Documents/*.pdf
+/Documents/*_cache/
+/Documents/*_files/
