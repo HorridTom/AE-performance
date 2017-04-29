@@ -23,16 +23,25 @@ make_bin_labels <- function(bins) {
 
 plot_ed_dist <- function(df, prov_codes = c("RBZ"), plot_line = TRUE) {
   prov_data <- df[df$Der_Provider_Code %in% prov_codes,]
-  ed_dist <- aggregate(prov_data$Activity, by=list(Category=prov_data$los_bin), FUN=sum)
-  colnames(ed_dist) <- c("Duration","Frequency")
+  
+  
+  if (nrow(prov_data) == 0) {return(NULL)}
+  ed_dist <- aggregate(prov_data$Activity, by=list(Duration=prov_data$los_bin, Admitted=prov_data$admitted), FUN=sum)
+  colnames(ed_dist)[3] <- "Frequency"
   
   if(!plot_line) {
     pp <- ggplot(data = ed_dist, aes(x = Duration, y = Frequency))
     pp + geom_bar(stat = "identity") + theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
   } else {
-    pp <- ggplot(data = ed_dist, aes(x = factor(Duration), y = Frequency, group = 1))
-    pp + geom_line() + geom_point() + theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
+    pp <- ggplot(data = ed_dist, aes(x = Duration, y = Frequency, group = Admitted, colour = Admitted))
+    pp + geom_line() + geom_point() + theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) 
   }
-  
 
+}
+
+make_adm_colour_palette <- function(levs) {
+  adm_colours <- RColorBrewer::brewer.pal(4,"Dark2")
+  names(adm_colours) <- append(levs, c(NA, NA), after = 1)
+  admColScale <- scale_colour_manual(name="Admitted", values = adm_colours)
+  admColScale
 }
