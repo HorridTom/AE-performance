@@ -12,8 +12,11 @@ clean_los_data <- function(df, sv = TRUE, rt = FALSE, disp_propmiss = TRUE) {
     print(propmiss(df))
   }
   
+  df$admitted <- df$AEA_Attendance_Disposal == 1
+  
   if(sv) {
-    save(df, file = "data/ED-los-clean.rda")
+    ed_los_clean <- df
+    save(ed_los_clean, file = "data/ED-los-clean.rda")
   }
   
   if(rt) {
