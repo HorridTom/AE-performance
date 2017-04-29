@@ -21,22 +21,26 @@ make_bin_labels <- function(bins) {
   bin_labels
 }
 
-plot_ed_dist <- function(df, prov_codes = c("RBZ"), plot_line = TRUE) {
+plot_ed_dist <- function(df, prov_codes = c("RBZ"), cumulative = TRUE) {
   prov_data <- df[df$Der_Provider_Code %in% prov_codes,]
   
   
   if (nrow(prov_data) == 0) {return(NULL)}
   ed_dist <- aggregate(prov_data$Activity, by=list(Duration=prov_data$los_bin, Admitted=prov_data$admitted), FUN=sum)
   colnames(ed_dist)[3] <- "Frequency"
+  ed_dist[ed_dist$Admitted==FALSE,"cumul_sum"] <- cumsum(ed_dist[ed_dist$Admitted==FALSE,"Frequency"])
+  ed_dist[ed_dist$Admitted==TRUE,"cumul_sum"] <- cumsum(ed_dist[ed_dist$Admitted==TRUE,"Frequency"])
   
-  if(!plot_line) {
-    pp <- ggplot(data = ed_dist, aes(x = Duration, y = Frequency))
-    pp + geom_bar(stat = "identity") + theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
-  } else {
-    pp <- ggplot(data = ed_dist, aes(x = Duration, y = Frequency, group = Admitted, colour = Admitted))
-    pp + geom_line() + geom_point() + theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) 
-  }
-
+  if(cumulative) {
+    ed_dist_m <- reshape2::melt(ed_dist, id = c("Duration", "Admitted"))
+  } else {ed_dist_m <- ed_dist}
+  
+  pp <- ggplot(data = ed_dist_m, aes(x = Duration, y = value, group = Admitted, colour = Admitted))
+  pp <- pp + geom_path() + geom_point() + theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
+  
+  if(cumulative) {pp <- pp + facet_grid(variable ~ ., scales = "free")}
+  pp
+    
 }
 
 make_adm_colour_palette <- function(levs) {

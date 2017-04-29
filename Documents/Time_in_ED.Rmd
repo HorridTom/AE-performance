@@ -14,7 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r, fig.height=5, fig.width=7, cache=TRUE}
   
   load(file = "../data/ED-los-clean.rda")
-  library(ggplot2, RColorBrewer)
+  library(ggplot2, RColorBrewer, reshape2)
   source("../R/ED_los_analysis.R")
   ed_los_data <- make_bins(ed_los_clean)
   
@@ -24,7 +24,7 @@ knitr::opts_chunk$set(echo = TRUE)
   
   v <- unique(as.character(ed_los_data$Der_Provider_Code))
   
-  lapply(v, function(x) {plot_ed_dist(ed_los_data, plot_line = TRUE, prov_codes = c(x)) + admColScale})
+  lapply(v, function(x) {plot_ed_dist(ed_los_data, cumulative = TRUE, prov_codes = c(x)) + admColScale})
   
 
 ```
