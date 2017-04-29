@@ -3,23 +3,26 @@ title: "Delayed Transfers of Care - London"
 author: "Dr. Thomas Woodcock"
 date: "5 April 2017"
 output:
+  html_document: default
   pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+#knitr::opts_knit$set(root.dir = '..')
 ```
 
 ## Line charts of % delayed transfers of care
 
 ```{r, fig.height=5, fig.width=7, cache=TRUE}
-  load(file = "C:/Users/tw299/Rprojects/AE-performance/data/DTOC_London_clean.rda")
+  print(getwd())
+  load(file = "../data/DTOC_London_clean.rda")
   library(reshape, ggplot2)
-  source("C:/Users/tw299/Rprojects/AE-performance/R/DTOC_cleaning.R")
+  source("../R/DTOC_cleaning.R")
   dlc_melt <- melt_dtoc_data(dtoc_london_clean)
   v <- unique(dlc_melt$Trust)
   lapply(v, function(x) {plot_dtoc_line(dtoc_london_clean, trusts = c(x))})
   
-  #plot_dtoc_line(dtoc_london_clean)
+  plot_dtoc_line(dtoc_london_clean)
 
 ```
