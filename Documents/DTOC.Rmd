@@ -23,6 +23,5 @@ knitr::opts_chunk$set(echo = TRUE)
   v <- unique(dlc_melt$Trust)
   lapply(v, function(x) {plot_dtoc_line(dtoc_london_clean, trusts = c(x))})
   
-  plot_dtoc_line(dtoc_london_clean)
 
 ```
