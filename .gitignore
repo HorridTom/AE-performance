@@ -30,6 +30,7 @@ documents/*.pdf
 # Packrat library folders
 packrat/lib*/
 # Packrat source folder
+packrat/src*/
 # Raw data
 /data-raw/*.xls*
 .Rproj.user
