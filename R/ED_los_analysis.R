@@ -2,22 +2,24 @@ make_bins <- function(df, los_col = 'Der_AEA_Duration', bin_col = 'los_bin', def
   
   max_los <- max(df[,los_col], na.rm=TRUE)
   bins <- seq(from = 0, to = 24*15, by= 15)
-  bin_labels <- make_bin_labels(bins)
+  bin_labels <- make_bin_labels(bins, max_los)
   bins <- append(bins, max_los + 1)
   
   if(default_labels){
     df[,bin_col] <- cut(df[,los_col], breaks = bins, right = FALSE)
   } else{
-    df[,bin_col] <- cut(df[,los_col], breaks = bins, labels = bin_labels)
+    df[,bin_col] <- cut(df[,los_col], breaks = bins, right = FALSE, labels = bin_labels)
   }
   df
 }
 
-make_bin_labels <- function(bins) {
+make_bin_labels <- function(bins, maximum) {
+  bins <- paste(bins%/%60,sprintf("%02d", bins%%60),sep=":")
   bin_chars <- as.character(bins)
   bin_chars_shift <- bin_chars[-1]
   bin_chars_shift <- append(bin_chars_shift,"")
   bin_labels <- paste(bin_chars,bin_chars_shift,sep="-")
+  bin_labels[length(bin_labels)] <- paste("",paste(maximum%/%60,sprintf("%02d", maximum%%60),sep=":"),sep = "-")
   bin_labels
 }
 
@@ -46,7 +48,7 @@ plot_ed_dist <- function(df, prov_codes = c("RBZ"), cumulative = TRUE) {
     cm_df$Admitted <- rep("ALL", length(w1))
     ed_dist_m <- rbind(ed_dist_m, cm_df)
     
-    intercepts_4h <- ed_dist_m[which(ed_dist_m$Duration=="[225,240)" & ed_dist_m$variable=="Cumulative Percentage"),which(colnames(ed_dist_m) %in% c("variable", "value", "Admitted"))]
+    intercepts_4h <- ed_dist_m[which(ed_dist_m$Duration=="3:45-4:00" & ed_dist_m$variable=="Cumulative Percentage"),which(colnames(ed_dist_m) %in% c("variable", "value", "Admitted"))]
     
   } else {
     colnames(ed_dist)[3] <- "value"
@@ -58,7 +60,7 @@ plot_ed_dist <- function(df, prov_codes = c("RBZ"), cumulative = TRUE) {
                                                 axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5), axis.title.y = element_blank())
   
   if(cumulative) {pp <- pp + facet_grid(variable ~ ., scales = "free")}
-  pp + geom_vline(xintercept = 16, colour="grey60") + geom_hline(aes(yintercept = value, colour=Admitted), intercepts_4h) + ggtitle("Distribution of time in Emergency Department") + xlab("Time in ED")
+  pp + geom_vline(xintercept = 16, colour="grey60") + geom_segment(aes(x=0, xend = 16, y = value, yend = value, colour=Admitted), intercepts_4h) + geom_text(aes(x=rep(0,3), y=value-8, label = sprintf("%.1f",value), vjust = rep(-1,3), hjust = rep(0.02,3)), intercepts_4h, size = 3, show.legend = FALSE) + ggtitle("Distribution of time in Emergency Department") + xlab("Time in ED")
     
 }
 

@@ -1,0 +1,38 @@
+---
+title: "Emergency Deparment Flow Analysis - NHS England South"
+author: "Dr Tom Woodcock - Centre for Healthcare Improvement Research"
+date: "30 April 2017"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+library(ggplot2)
+library(RColorBrewer)
+library(reshape2)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Time in Emergency Department
+
+```{r echo=FALSE, eval=TRUE, include=FALSE}
+out <- NULL
+
+load(file = "../data/ED-los-clean.rda")
+source("../R/ED_los_analysis.R")
+ed_los_data <- make_bins(ed_los_clean, default_labels = FALSE)
+providerCodes <- unique(ed_los_data$Der_Provider_Code)
+
+for(pr in providerCodes){
+  print(pr)
+
+    pr<-pr #update the pr variable in the environment
+    pr_name <- ed_los_data[which(ed_los_data$Der_Provider_Code == pr),"Provider_Name"][[1]]
+    env=new.env() #create a new empty environment, it inherits objects from the current environment.
+    out <- c(out, knit_child('individual_time_in_ED_distribution.Rmd', envir=env))
+    cat("\\newpage")
+}
+```
+`r paste(out, collapse='\n')`

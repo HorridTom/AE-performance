@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Distribution of Time in ED
 
-```{r, fig.height=5, fig.width=7, cache=TRUE}
+```{r, fig.height=7, fig.width=7, cache=TRUE}
   
   load(file = "../data/ED-los-clean.rda")
   library(ggplot2, RColorBrewer, reshape2)
@@ -22,7 +22,7 @@ knitr::opts_chunk$set(echo = TRUE)
   #names(adm_colours) <- append(levels(factor(ed_los_data$admitted)), c(NA, NA), after = 1)
   #admColScale <- scale_colour_manual(name="Admitted", values = adm_colours)
   
-  admColScale <- make_adm_colour_palette(c("TRUE","ALL","FALSE"))
+  admColScale <- make_adm_colour_palette()
   
   v <- unique(as.character(ed_los_data$Der_Provider_Code))
   
