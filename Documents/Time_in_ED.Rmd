@@ -18,9 +18,11 @@ knitr::opts_chunk$set(echo = TRUE)
   source("../R/ED_los_analysis.R")
   ed_los_data <- make_bins(ed_los_clean)
   
-  adm_colours <- RColorBrewer::brewer.pal(4,"Dark2")
-  names(adm_colours) <- append(levels(factor(ed_los_data$admitted)), c(NA, NA), after = 1)
-  admColScale <- scale_colour_manual(name="Admitted", values = adm_colours)
+  #adm_colours <- RColorBrewer::brewer.pal(4,"Dark2")
+  #names(adm_colours) <- append(levels(factor(ed_los_data$admitted)), c(NA, NA), after = 1)
+  #admColScale <- scale_colour_manual(name="Admitted", values = adm_colours)
+  
+  admColScale <- make_adm_colour_palette(c("TRUE","ALL","FALSE"))
   
   v <- unique(as.character(ed_los_data$Der_Provider_Code))
   
