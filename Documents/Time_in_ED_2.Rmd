@@ -3,8 +3,8 @@ title: "Emergency Deparment Flow Analysis - NHS England South"
 author: "Dr Tom Woodcock - Centre for Healthcare Improvement Research"
 date: "30 April 2017"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
