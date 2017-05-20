@@ -1,0 +1,56 @@
+---
+title: "Emergency Department Flow Analysis - NHS England South"
+author: "Centre for Healthcare Improvement Research"
+date: "20 May 2017"
+output:
+  pdf_document: default
+latex_engine: xelatex
+mainfont: Helvetica
+sansfont: Helvetica
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+library(ggplot2)
+library(RColorBrewer)
+library(reshape2)
+library(qicharts)
+library(tidyr)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+\newpage
+
+```{r echo=FALSE, eval=TRUE, include=FALSE}
+out <- NULL
+
+# setup distribution code and data
+load(file = "../data/ED-los-clean.rda")
+source("../R/ED_los_analysis.R")
+ed_los_data <- make_bins(ed_los_clean, default_labels = FALSE)
+providerCodes <- unique(ed_los_data$Der_Provider_Code)
+
+# setup performance over time code and data
+load(file = "../data/perf_4h_south_clean.rda")
+source("../R/perf_4h_south_analysis.R")
+
+for(pr in providerCodes){
+  #print(pr)
+
+    pr<-pr #update the pr variable in the environment
+    pr_name <- ed_los_data[which(ed_los_data$Der_Provider_Code == pr),"Provider_Name"][[1]]
+    
+    env=new.env() #create a new empty environment, it inherits objects from the current environment.
+    out <- c(out, knit_child('section_header.Rmd', envir=env))
+    #cat("  \n")
+    
+    env=new.env() #create a new empty environment, it inherits objects from the current environment.
+    out <- c(out, knit_child('individual_time_in_ED_distribution.Rmd', envir=env))
+    cat("\\newpage")
+    
+    env=new.env() #create a new empty environment, it inherits objects from the current environment.
+    out <- c(out, knit_child('individual_performance_over_time.Rmd', envir=env))
+    #cat("\\newpage")
+}
+```
+`r paste(out, collapse='\n')`

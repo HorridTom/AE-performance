@@ -1,0 +1,17 @@
+---
+title: "Individual Performance Over Time"
+author: "Dr Tom Woodcock"
+date: "20 May 2017"
+output: html_document
+---
+
+#### Performance over time
+
+```{r eval=TRUE, echo=FALSE, fig.height=4, fig.width=5, tidy=FALSE, message=FALSE, warning=FALSE}
+  
+  plot_performance(perf_4h_south_clean, prov_codes = c(pr), start.date = "2014-02-01",end.date = "2017-02-01", brk.date = "2016-02-01")
+
+  cat("  \n")
+
+  plot_volume(perf_4h_south_clean, prov_codes = c(pr), start.date = "2014-02-01",end.date = "2017-02-01")
+```
