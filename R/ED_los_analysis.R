@@ -1,7 +1,7 @@
-make_bins <- function(df, los_col = 'Der_AEA_Duration', bin_col = 'los_bin', default_labels = TRUE) {
+make_bins <- function(df, los_col = 'Der_AEA_Duration', bin_col = 'los_bin', default_labels = TRUE, top_bin_end = 48*15) {
   
-  max_los <- max(df[,los_col], na.rm=TRUE)
-  bins <- seq(from = 0, to = 24*15, by= 15)
+  max_los <- max(max(df[,los_col], na.rm=TRUE), top_bin_end)
+  bins <- seq(from = 0, to = top_bin_end, by= 15)
   bin_labels <- make_bin_labels(bins, max_los)
   bins <- append(bins, max_los + 1)
   
@@ -28,8 +28,31 @@ plot_ed_dist <- function(df, prov_codes = c("RBZ"), cumulative = TRUE) {
   
   
   if (nrow(prov_data) == 0) {return(NULL)}
-  ed_dist <- aggregate(prov_data$Activity, by=list(Duration=prov_data$los_bin, Admitted=prov_data$admitted), FUN=sum)
-  colnames(ed_dist)[3] <- "Frequency"
+  
+  
+  #ed_dist <- aggregate(prov_data$Activity, by=list(Duration=prov_data$los_bin, Admitted=prov_data$admitted), FUN=sum)
+  
+  prov_data_adm <- prov_data[prov_data$admitted == TRUE,]
+  prov_data_att <- prov_data[prov_data$admitted == FALSE,]
+  
+  #This is a hack to aggregate over all levels of the bin factor - need to refactor using dplyr
+  #Also note, need to deal with the case where original data contains no times in given bin
+  #Probably using original bins from the cut as basis.
+  Y <- data.frame(los_bin = levels(prov_data$los_bin))
+  Y$id <- c(1:nrow(Y))
+  ed_dist_adm <- merge(Y,aggregate(prov_data_adm$Activity, by=list(los_bin=prov_data_adm$los_bin), FUN=sum), all.x = T)
+  ed_dist_adm <- ed_dist_adm[order(ed_dist_adm$id),]
+  ed_dist_att <- merge(Y,aggregate(prov_data_att$Activity, by=list(los_bin=prov_data_att$los_bin), FUN=sum), all.x = T)
+  ed_dist_att <- ed_dist_att[order(ed_dist_att$id),]
+  ed_dist_adm$Admitted <- rep(TRUE,nrow(ed_dist_adm))
+  ed_dist_att$Admitted <- rep(FALSE,nrow(ed_dist_att))
+  ed_dist <- rbind(ed_dist_att, ed_dist_adm)
+  ed_dist$id <- NULL
+  ed_dist$los_bin <- factor(ed_dist$los_bin, levels = levels(prov_data$los_bin))
+  ed_dist$x = ifelse(is.na(ed_dist$x), 0, ed_dist$x)
+  colnames(ed_dist)[which(names(ed_dist) == "x")] <- "Frequency"
+  colnames(ed_dist)[which(names(ed_dist) == "los_bin")] <- "Duration"
+  
   if (cumulative) {
     v <- cumsum(ed_dist[ed_dist$Admitted==FALSE,"Frequency"])
     v1 <- v/max(v)*100

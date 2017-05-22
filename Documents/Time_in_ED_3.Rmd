@@ -50,7 +50,7 @@ for(pr in providerCodes){
     
     env=new.env() #create a new empty environment, it inherits objects from the current environment.
     out <- c(out, knit_child('individual_performance_over_time.Rmd', envir=env))
-    #cat("\\newpage")
+    cat("\\newpage")
 }
 ```
 `r paste(out, collapse='\n')`
