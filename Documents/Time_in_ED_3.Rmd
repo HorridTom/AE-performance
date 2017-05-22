@@ -1,7 +1,7 @@
 ---
 title: "Emergency Department Flow Analysis - NHS England South"
 author: "Centre for Healthcare Improvement Research"
-date: "20 May 2017"
+date: "22 May 2017"
 output:
   pdf_document: default
 latex_engine: xelatex

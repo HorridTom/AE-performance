@@ -14,4 +14,12 @@ output: html_document
   cat("  \n")
 
   plot_volume(perf_4h_south_clean, prov_codes = c(pr), start.date = "2014-02-01",end.date = "2017-02-01")
+  
+  cat("\\newpage")
+  plot_performance(perf_4h_south_clean, prov_codes = c(pr), start.date = "2014-02-01",end.date = "2017-02-01", brk.date = "2016-02-01", adm_only = TRUE, max_lower_y_scale = 40)
+  
+  cat("  \n")
+
+  plot_volume(perf_4h_south_clean, prov_codes = c(pr), start.date = "2014-02-01",end.date = "2017-02-01", adm_only = TRUE, min_upper_y_scale = 750)
+  
 ```

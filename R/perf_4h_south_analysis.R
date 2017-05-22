@@ -1,6 +1,10 @@
-make_perf_series <- function(df, prov_codes = c("RBZ"), perf_only = FALSE) {
+make_perf_series <- function(df, prov_codes = c("RBZ"), perf_only = FALSE, adm_only = FALSE) {
   
   data_prov <- df[df$Prov_Code %in% prov_codes,]
+  
+  if (adm_only) {
+    data_prov <- data_prov[data_prov$Admitted == TRUE,]
+  }
   
   south_4h <- aggregate(Activity ~ Wk_End_Sun + Prov_Code + Greater_4h, data = data_prov, sum)
   perf_4h_wide <- spread(data = south_4h, key = Greater_4h, value = Activity)
@@ -43,16 +47,20 @@ plot_performance_qcc <- function(df) {
 
 }
 
-plot_performance <- function(df, prov_codes = c("RBZ"), date.col = 'Wk_End_Sun', start.date = "2014-01-01", end.date = "2017-02-28", brk.date = "2016-01-01", max_lower_y_scale = 60) {
+plot_performance <- function(df, prov_codes = c("RBZ"), date.col = 'Wk_End_Sun', start.date = "2014-01-01", end.date = "2017-02-28", brk.date = "2016-01-01", max_lower_y_scale = 60, adm_only = FALSE) {
   # pass df as cleaned 4h perf data from the clean_4h_data function
   
   # lookup full name of provider
   # note written for just one provider
   pr_name <- df[which(df$Prov_Code == prov_codes),"Prov_Name"][[1]]
   #cht_title = paste("Weekly percentage ED attendances with time in department < 4h",pr_name,sep="\n")
-  cht_title = "Weekly percentage ED attendances with time in department < 4h"
+  if (adm_only) {
+    cht_title = "Weekly percentage admissions through ED \n with time in department < 4h"
+  } else {
+    cht_title = "Weekly percentage ED attendances \n with time in department < 4h"
+  }
   
-  df <- make_perf_series(df = df, prov_codes = prov_codes)
+  df <- make_perf_series(df = df, prov_codes = prov_codes, adm_only = adm_only)
   
   st.dt <- as.Date(start.date)
   ed.dt <- as.Date(end.date)
@@ -92,16 +100,22 @@ plot_performance <- function(df, prov_codes = c("RBZ"), date.col = 'Wk_End_Sun',
     
 }
 
-plot_volume <- function(df, prov_codes = c("RBZ"), date.col = 'Wk_End_Sun', start.date = "2014-01-01", end.date = "2017-02-28", brk.date = "2016-01-01", min_upper_y_scale = 3000) {
+plot_volume <- function(df, prov_codes = c("RBZ"), date.col = 'Wk_End_Sun', start.date = "2014-01-01", end.date = "2017-02-28", brk.date = "2016-01-01", min_upper_y_scale = 3000, adm_only = FALSE) {
   # pass df as cleaned 4h perf data from the clean_4h_data function
   
   # lookup full name of provider
   # note written for just one provider
   pr_name <- df[which(df$Prov_Code == prov_codes),"Prov_Name"][[1]]
   #cht_title = paste("Weekly total ED attendances",pr_name,sep="\n")
-  cht_title = "Weekly total ED attendances"
+  if (adm_only) {
+    cht_title = "Weekly total admissions through ED"
+    y_axis_lab = "Admissions"
+  } else {
+    cht_title = "Weekly total ED attendances"
+    y_axis_lab = "Attendances"
+  }
   
-  df <- make_perf_series(df = df, prov_codes = prov_codes)
+  df <- make_perf_series(df = df, prov_codes = prov_codes, adm_only = adm_only)
   
   st.dt <- as.Date(start.date)
   ed.dt <- as.Date(end.date)
@@ -118,7 +132,7 @@ plot_volume <- function(df, prov_codes = c("RBZ"), date.col = 'Wk_End_Sun', star
   pp + geom_path() + geom_point() + ylim(0,ylimhigh) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(),
         axis.line=element_line(colour = "grey75"), axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
-  labs(title = cht_title, x="Week Ending Sunday", y="Attendances") +
+  labs(title = cht_title, x="Week Ending Sunday", y=y_axis_lab) +
   geom_vline(xintercept = as.numeric(br.dt), colour="grey60")
   
 }
