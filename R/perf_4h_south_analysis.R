@@ -1,12 +1,18 @@
-make_perf_series <- function(df, prov_codes = c("RBZ"), perf_only = FALSE, adm_only = FALSE) {
+make_perf_series <- function(df, prov_codes = c("RBZ"), perf_only = FALSE, adm_only = FALSE, all_provs = FALSE) {
   
-  data_prov <- df[df$Prov_Code %in% prov_codes,]
+  if (!all_provs) {data_prov <- df[df$Prov_Code %in% prov_codes,]} else {
+    data_prov <- df
+  }
   
   if (adm_only) {
     data_prov <- data_prov[data_prov$Admitted == TRUE,]
   }
   
-  south_4h <- aggregate(Activity ~ Wk_End_Sun + Prov_Code + Greater_4h, data = data_prov, sum)
+  if (all_provs) {
+    south_4h <- aggregate(Activity ~ Wk_End_Sun + Greater_4h, data = data_prov, sum)
+  } else {
+    south_4h <- aggregate(Activity ~ Wk_End_Sun + Prov_Code + Greater_4h, data = data_prov, sum)
+  }
   perf_4h_wide <- spread(data = south_4h, key = Greater_4h, value = Activity)
   
   colnames(perf_4h_wide)[colnames(perf_4h_wide) == "FALSE"] <- "Within_4h"
@@ -47,7 +53,7 @@ plot_performance_qcc <- function(df) {
 
 }
 
-plot_performance <- function(df, prov_codes = c("RBZ"), date.col = 'Wk_End_Sun', start.date = "2014-01-01", end.date = "2017-02-28", brk.date = "2016-01-01", max_lower_y_scale = 60, adm_only = FALSE) {
+plot_performance <- function(df, prov_codes = c("RBZ"), date.col = 'Wk_End_Sun', start.date = "2014-01-01", end.date = "2017-02-28", brk.date = "2016-01-01", max_lower_y_scale = 60, adm_only = FALSE, all_provs = FALSE) {
   # pass df as cleaned 4h perf data from the clean_4h_data function
   
   # lookup full name of provider
@@ -60,7 +66,7 @@ plot_performance <- function(df, prov_codes = c("RBZ"), date.col = 'Wk_End_Sun',
     cht_title = "Weekly percentage ED attendances \n with time in department < 4h"
   }
   
-  df <- make_perf_series(df = df, prov_codes = prov_codes, adm_only = adm_only)
+  df <- make_perf_series(df = df, prov_codes = prov_codes, adm_only = adm_only, all_provs = all_provs)
   
   st.dt <- as.Date(start.date)
   ed.dt <- as.Date(end.date)
@@ -100,7 +106,7 @@ plot_performance <- function(df, prov_codes = c("RBZ"), date.col = 'Wk_End_Sun',
     
 }
 
-plot_volume <- function(df, prov_codes = c("RBZ"), date.col = 'Wk_End_Sun', start.date = "2014-01-01", end.date = "2017-02-28", brk.date = "2016-01-01", min_upper_y_scale = 3000, adm_only = FALSE) {
+plot_volume <- function(df, prov_codes = c("RBZ"), date.col = 'Wk_End_Sun', start.date = "2014-01-01", end.date = "2017-02-28", brk.date = "2016-01-01", min_upper_y_scale = 3000, adm_only = FALSE, all_provs = FALSE) {
   # pass df as cleaned 4h perf data from the clean_4h_data function
   
   # lookup full name of provider
@@ -115,7 +121,7 @@ plot_volume <- function(df, prov_codes = c("RBZ"), date.col = 'Wk_End_Sun', star
     y_axis_lab = "Attendances"
   }
   
-  df <- make_perf_series(df = df, prov_codes = prov_codes, adm_only = adm_only)
+  df <- make_perf_series(df = df, prov_codes = prov_codes, adm_only = adm_only, all_provs = all_provs)
   
   st.dt <- as.Date(start.date)
   ed.dt <- as.Date(end.date)
