@@ -3,10 +3,11 @@ title: "Emergency Department Flow Analysis - NHS England South"
 author: "Centre for Healthcare Improvement Research"
 date: "22 May 2017"
 output:
+  word_document: default
   pdf_document: default
-latex_engine: xelatex
 mainfont: Helvetica
 sansfont: Helvetica
+latex_engine: xelatex
 ---
 
 ```{r setup, include=FALSE}
@@ -18,6 +19,9 @@ library(qicharts)
 library(tidyr)
 library(scales)
 knitr::opts_chunk$set(echo = TRUE)
+opts_chunk$set(dev="png", 
+               dev.args=list(type="cairo"),
+               dpi=120)
 ```
 
 \newpage
