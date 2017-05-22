@@ -22,6 +22,7 @@ knitr::opts_chunk$set(echo = TRUE)
 \newpage
 
 ```{r echo=FALSE, eval=TRUE, include=FALSE}
+pseudonymise = TRUE
 out <- NULL
 
 # setup distribution code and data
@@ -33,6 +34,9 @@ providerCodes <- unique(ed_los_data$Der_Provider_Code)
 # setup performance over time code and data
 load(file = "../data/perf_4h_south_clean.rda")
 source("../R/perf_4h_south_analysis.R")
+
+# load table of pseudo ids
+load(file = "../data/organisation_codes.rda")
 
 all_provs <- TRUE
 
@@ -57,7 +61,11 @@ for(pr_elt in providerCodes){
   #print(pr)
     pr <- c(pr_elt)
     pr<-pr #update the pr variable in the environment
-    pr_name <- ed_los_data[which(ed_los_data$Der_Provider_Code == pr_elt),"Provider_Name"][[1]]
+    if (pseudonymise) {
+      pr_name <- paste("Organisation", organisation_codes[which(organisation_codes$Prov_Code == pr_elt),"pseudoid"][[1]], sep=" ")
+    } else {
+      pr_name <- ed_los_data[which(ed_los_data$Der_Provider_Code == pr_elt),"Provider_Name"][[1]]
+      }
     
     env=new.env() #create a new empty environment, it inherits objects from the current environment.
     out <- c(out, knit_child('section_header.Rmd', envir=env))

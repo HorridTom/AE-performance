@@ -7,7 +7,7 @@ output: html_document
 
 #### Time in Emergency Department
 
-```{r eval=TRUE, echo=FALSE, fig.height=4, fig.width=7, tidy=FALSE}
+```{r eval=TRUE, echo=FALSE, fig.height=4.5, fig.width=7, tidy=FALSE}
   
   admColScale <- make_adm_colour_palette()
 
