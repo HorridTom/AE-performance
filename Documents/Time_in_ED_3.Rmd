@@ -25,18 +25,19 @@ knitr::opts_chunk$set(echo = TRUE)
 pseudonymise = TRUE
 out <- NULL
 
+# load table of pseudo ids
+load(file = "../data/organisation_codes.rda")
+
 # setup distribution code and data
 load(file = "../data/ED-los-clean.rda")
 source("../R/ED_los_analysis.R")
 ed_los_data <- make_bins(ed_los_clean, default_labels = FALSE)
-providerCodes <- unique(ed_los_data$Der_Provider_Code)
+
+providerCodes <- organisation_codes$Prov_Code
 
 # setup performance over time code and data
 load(file = "../data/perf_4h_south_clean.rda")
 source("../R/perf_4h_south_analysis.R")
-
-# load table of pseudo ids
-load(file = "../data/organisation_codes.rda")
 
 all_provs <- TRUE
 
