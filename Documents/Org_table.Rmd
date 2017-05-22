@@ -1,0 +1,30 @@
+---
+title: "NHS England South Organisations"
+author: "Centre for Healthcare Improvement Research"
+date: "23 May 2017"
+output:
+  pdf_document: default
+latex_engine: xelatex
+mainfont: Helvetica
+sansfont: Helvetica
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+library(ggplot2)
+library(RColorBrewer)
+library(reshape2)
+library(qicharts)
+library(tidyr)
+library(scales)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r echo=FALSE, eval=TRUE}
+
+# load table of pseudo ids
+load(file = "../data/organisation_codes.rda")
+
+knitr::kable(organisation_codes, row.names = FALSE)
+
+```
