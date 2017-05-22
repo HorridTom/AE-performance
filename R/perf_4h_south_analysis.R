@@ -101,7 +101,7 @@ plot_performance <- function(df, prov_codes = c("RBZ"), date.col = 'Wk_End_Sun',
     geom_point(aes_string(x = 'x', y = 'y', group = 'breaks', fill = 'pcol'), size = 2) + 
     scale_fill_manual(values = cols) + scale_color_manual(values = cols) +
     labs(title = cht_title, x="Week Ending Sunday", y="Percentage") +
-    ylim(ylimlow,100)
+    ylim(ylimlow,100) + scale_x_date(labels = date_format("%Y-%m"),breaks = date_breaks("3 months")) + theme(axis.text.x = element_text(angle=45), plot.title = element_text(hjust = 0.5))
   
     
 }
@@ -139,7 +139,8 @@ plot_volume <- function(df, prov_codes = c("RBZ"), date.col = 'Wk_End_Sun', star
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(),
         axis.line=element_line(colour = "grey75"), axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
   labs(title = cht_title, x="Week Ending Sunday", y=y_axis_lab) +
-  geom_vline(xintercept = as.numeric(br.dt), colour="grey60")
+  geom_vline(xintercept = as.numeric(br.dt), colour="grey60") +
+  scale_x_date(labels = date_format("%Y-%m"),breaks = date_breaks("3 months")) + theme(axis.text.x = element_text(angle=45), plot.title = element_text(hjust = 0.5))
   
 }
 

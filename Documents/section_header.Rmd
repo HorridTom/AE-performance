@@ -6,4 +6,4 @@ output: html_document
 ---
 
 \newpage
-### `r pr_name`
+# `r pr_name`

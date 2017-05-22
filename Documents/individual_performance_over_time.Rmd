@@ -2,10 +2,12 @@
 title: "Individual Performance Over Time"
 author: "Dr Tom Woodcock"
 date: "20 May 2017"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 \newpage
-#### Performance over time
+## Performance over time
 
 ```{r eval=TRUE, echo=FALSE, fig.height=4, fig.width=7, tidy=FALSE, message=FALSE, warning=FALSE}
   
