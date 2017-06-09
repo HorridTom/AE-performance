@@ -3,8 +3,8 @@ title: "Emergency Department Flow Analysis - NHS England South"
 author: "Centre for Healthcare Improvement Research"
 date: "22 May 2017"
 output:
-  word_document: default
   pdf_document: default
+  word_document: default
 mainfont: Helvetica
 sansfont: Helvetica
 latex_engine: xelatex
