@@ -1,4 +1,7 @@
-make_perf_series <- function(df, prov_codes = c("RBZ"), perf_only = FALSE, adm_only = FALSE, all_provs = FALSE) {
+make_perf_series <- function(df, prov_codes = c("RBZ"), perf_only = FALSE, 
+                             adm_only = FALSE, all_provs = FALSE,
+                             dept_types = c('1','2','3')) {
+  df <- df[which(df$AEA_Department_Type %in% dept_types),]
   
   if (!all_provs) {data_prov <- df[df$Prov_Code %in% prov_codes,]} else {
     data_prov <- df
@@ -53,7 +56,11 @@ plot_performance_qcc <- function(df) {
 
 }
 
-plot_performance <- function(df, prov_codes = c("RBZ"), date.col = 'Wk_End_Sun', start.date = "2014-01-01", end.date = "2017-02-28", brk.date = "2016-01-01", max_lower_y_scale = 60, adm_only = FALSE, all_provs = FALSE) {
+plot_performance <- function(df, prov_codes = c("RBZ"), date.col = 'Wk_End_Sun',
+                             start.date = "2014-01-01", end.date = "2017-02-28",
+                             brk.date = "2016-01-01", max_lower_y_scale = 60,
+                             adm_only = FALSE, all_provs = FALSE,
+                             dept_types = c('1','2','3')) {
   # pass df as cleaned 4h perf data from the clean_4h_data function
   
   # lookup full name of provider
@@ -61,12 +68,13 @@ plot_performance <- function(df, prov_codes = c("RBZ"), date.col = 'Wk_End_Sun',
   pr_name <- df[which(df$Prov_Code == prov_codes),"Prov_Name"][[1]]
   #cht_title = paste("Weekly percentage ED attendances with time in department < 4h",pr_name,sep="\n")
   if (adm_only) {
-    cht_title = "Weekly percentage admissions through ED \n with time in department < 4h"
+    cht_title = paste("Weekly percentage admissions through ED \n with time in department < 4h. Dept. types: ",paste(dept_types,sep="",collapse=","),sep="")
   } else {
-    cht_title = "Weekly percentage ED attendances \n with time in department < 4h"
+    cht_title = paste("Weekly percentage ED attendances \n with time in department < 4h. Dept. types: ",paste(dept_types,sep="",collapse=","),sep="")
   }
   
-  df <- make_perf_series(df = df, prov_codes = prov_codes, adm_only = adm_only, all_provs = all_provs)
+  df <- make_perf_series(df = df, prov_codes = prov_codes, adm_only = adm_only,
+                         all_provs = all_provs, dept_types = dept_types)
   
   st.dt <- as.Date(start.date)
   ed.dt <- as.Date(end.date)
@@ -106,7 +114,11 @@ plot_performance <- function(df, prov_codes = c("RBZ"), date.col = 'Wk_End_Sun',
     
 }
 
-plot_volume <- function(df, prov_codes = c("RBZ"), date.col = 'Wk_End_Sun', start.date = "2014-01-01", end.date = "2017-02-28", brk.date = "2016-01-01", min_upper_y_scale = 3000, adm_only = FALSE, all_provs = FALSE) {
+plot_volume <- function(df, prov_codes = c("RBZ"), date.col = 'Wk_End_Sun',
+                        start.date = "2014-01-01", end.date = "2017-02-28",
+                        brk.date = "2016-01-01", min_upper_y_scale = 3000,
+                        adm_only = FALSE, all_provs = FALSE,
+                        dept_types = c('1','2','3')) {
   # pass df as cleaned 4h perf data from the clean_4h_data function
   
   # lookup full name of provider
@@ -114,14 +126,14 @@ plot_volume <- function(df, prov_codes = c("RBZ"), date.col = 'Wk_End_Sun', star
   pr_name <- df[which(df$Prov_Code == prov_codes),"Prov_Name"][[1]]
   #cht_title = paste("Weekly total ED attendances",pr_name,sep="\n")
   if (adm_only) {
-    cht_title = "Weekly total admissions through ED"
+    cht_title = paste("Weekly total admissions through ED. Dept. types: ",paste(dept_types,sep="",collapse=","),sep="")
     y_axis_lab = "Admissions"
   } else {
-    cht_title = "Weekly total ED attendances"
+    cht_title = paste("Weekly total ED attendances. Dept. types: ",paste(dept_types,sep="",collapse=","),sep="")
     y_axis_lab = "Attendances"
   }
   
-  df <- make_perf_series(df = df, prov_codes = prov_codes, adm_only = adm_only, all_provs = all_provs)
+  df <- make_perf_series(df = df, prov_codes = prov_codes, adm_only = adm_only, all_provs = all_provs, dept_types = dept_types)
   
   st.dt <- as.Date(start.date)
   ed.dt <- as.Date(end.date)

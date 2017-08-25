@@ -1,0 +1,88 @@
+---
+title: "Emergency Department Flow Analysis - NHS England London"
+author: "Centre for Healthcare Improvement Research"
+date: "27 July 2017"
+output:
+  pdf_document: default
+  word_document: default
+mainfont: Helvetica
+sansfont: Helvetica
+latex_engine: xelatex
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+library(ggplot2)
+library(RColorBrewer)
+library(reshape2)
+library(qicharts)
+library(tidyr)
+library(scales)
+knitr::opts_chunk$set(echo = TRUE)
+opts_chunk$set(dev="png", 
+               dev.args=list(type="cairo"),
+               dpi=120)
+```
+
+\newpage
+
+```{r echo=FALSE, eval=TRUE, include=FALSE}
+pseudonymise = FALSE
+out <- NULL
+
+# load table of pseudo ids
+load(file = "../data/organisation_codes.rda")
+
+# setup distribution code and data
+load(file = "../data/ED-los-clean.rda")
+source("../R/ED_los_analysis.R")
+ed_los_data <- make_bins(ed_los_clean, default_labels = FALSE)
+
+providerCodes <- organisation_codes$Prov_Code
+
+# setup performance over time code and data
+load(file = "../data/perf_4h_clean.rda")
+source("../R/perf_4h_south_analysis.R")
+
+all_provs <- TRUE
+
+pr<-providerCodes
+pr_name <- "Combined Trusts"
+
+  env=new.env() #create a new empty environment, it inherits objects from the current         environment.
+    out <- c(out, knit_child('section_header.Rmd', envir=env))
+    #cat("  \n")
+    
+    env=new.env() #create a new empty environment, it inherits objects from the current environment.
+    out <- c(out, knit_child('individual_time_in_ED_distribution.Rmd', envir=env))
+    cat("\\newpage")
+    
+    env=new.env() #create a new empty environment, it inherits objects from the current environment.
+    out <- c(out, knit_child('individual_performance_over_time.Rmd', envir=env))
+    cat("\\newpage")
+
+all_provs <- FALSE
+
+for(pr_elt in providerCodes){
+    pr <- c(pr_elt)
+    pr<-pr #update the pr variable in the environment
+    if (pseudonymise) {
+      pr_name <- paste("Organisation", organisation_codes[which(organisation_codes$Prov_Code == pr_elt),"pseudoid"][[1]], sep=" ")
+    } else {
+      pr_name <- ed_los_data[which(ed_los_data$Der_Provider_Code == pr_elt),"Provider_Name"][[1]]
+      }
+    
+    env=new.env() #create a new empty environment, it inherits objects from the current environment.
+    out <- c(out, knit_child('section_header.Rmd', envir=env))
+    #cat("  \n")
+    
+    env=new.env() #create a new empty environment, it inherits objects from the current environment.
+    out <- c(out, knit_child('individual_time_in_ED_distribution.Rmd', envir=env))
+    cat("\\newpage")
+    
+    env=new.env() #create a new empty environment, it inherits objects from the current environment.
+    out <- c(out, knit_child('individual_performance_over_time.Rmd', envir=env))
+    cat("\\newpage")
+}
+```
+`r paste(out, collapse='\n')`

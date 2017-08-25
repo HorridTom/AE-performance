@@ -24,4 +24,21 @@ output:
 
   plot_volume(perf_4h_clean, prov_codes = pr, start.date = "2014-02-01",end.date = "2017-05-01", brk.date = "2016-02-01", adm_only = TRUE, min_upper_y_scale = 750, all_provs = all_provs)
   
+  cat("  \n")
+  
+  #Type 1 only
+  
+tryCatch(plot_performance(perf_4h_clean, prov_codes = pr, start.date = "2014-02-01",end.date = "2017-05-01", brk.date = "2016-02-01", all_provs = all_provs, dept_types = c('1')), error=function(e) NULL)
+
+  cat("  \n")
+
+  tryCatch(plot_volume(perf_4h_clean, prov_codes = pr, start.date = "2014-02-01",end.date = "2017-05-01", brk.date = "2016-02-01", all_provs = all_provs, dept_types = c('1')), error=function(e) NULL)
+  
+  #cat("\\newpage")
+  tryCatch(plot_performance(perf_4h_clean, prov_codes = pr, start.date = "2014-02-01",end.date = "2017-05-01", brk.date = "2016-02-01", adm_only = TRUE, max_lower_y_scale = 40, all_provs = all_provs, dept_types = c('1')), error=function(e) NULL)
+  
+  cat("  \n")
+
+  tryCatch(plot_volume(perf_4h_clean, prov_codes = pr, start.date = "2014-02-01",end.date = "2017-05-01", brk.date = "2016-02-01", adm_only = TRUE, min_upper_y_scale = 750, all_provs = all_provs, dept_types = c('1')), error=function(e) NULL)
+  
 ```
