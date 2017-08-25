@@ -1,7 +1,7 @@
 ---
-title: "Emergency Department Flow Analysis - NHS England South"
+title: "Emergency Department Flow Analysis - NHS England London"
 author: "Centre for Healthcare Improvement Research"
-date: "22 May 2017"
+date: "27 July 2017"
 output:
   pdf_document: default
   word_document: default
@@ -27,7 +27,7 @@ opts_chunk$set(dev="png",
 \newpage
 
 ```{r echo=FALSE, eval=TRUE, include=FALSE}
-pseudonymise = TRUE
+pseudonymise = FALSE
 out <- NULL
 
 # load table of pseudo ids
@@ -41,13 +41,13 @@ ed_los_data <- make_bins(ed_los_clean, default_labels = FALSE)
 providerCodes <- organisation_codes$Prov_Code
 
 # setup performance over time code and data
-load(file = "../data/perf_4h_south_clean.rda")
+load(file = "../data/perf_4h_clean.rda")
 source("../R/perf_4h_south_analysis.R")
 
 all_provs <- TRUE
 
 pr<-providerCodes
-pr_name <- "All NHS South Trusts"
+pr_name <- "Combined Trusts"
 
   env=new.env() #create a new empty environment, it inherits objects from the current         environment.
     out <- c(out, knit_child('section_header.Rmd', envir=env))
@@ -64,7 +64,6 @@ pr_name <- "All NHS South Trusts"
 all_provs <- FALSE
 
 for(pr_elt in providerCodes){
-  #print(pr)
     pr <- c(pr_elt)
     pr<-pr #update the pr variable in the environment
     if (pseudonymise) {

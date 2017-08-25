@@ -40,7 +40,15 @@ plot_ed_dist <- function(df, prov_codes = c("RBZ"), cumulative = TRUE) {
   #Probably using original bins from the cut as basis.
   Y <- data.frame(los_bin = levels(prov_data$los_bin))
   Y$id <- c(1:nrow(Y))
-  ed_dist_adm <- merge(Y,aggregate(prov_data_adm$Activity, by=list(los_bin=prov_data_adm$los_bin), FUN=sum), all.x = T)
+  
+  # This is a hack!!! to put column x of zeroes down the distribution.
+  if(nrow(prov_data_adm)==0) {
+    ed_dist_adm <- Y
+    ed_dist_adm$x <- 0
+  } else {
+    ed_dist_adm <- merge(Y,aggregate(prov_data_adm$Activity, by=list(los_bin=prov_data_adm$los_bin), FUN=sum), all.x = T)
+  }
+  
   ed_dist_adm <- ed_dist_adm[order(ed_dist_adm$id),]
   ed_dist_att <- merge(Y,aggregate(prov_data_att$Activity, by=list(los_bin=prov_data_att$los_bin), FUN=sum), all.x = T)
   ed_dist_att <- ed_dist_att[order(ed_dist_att$id),]

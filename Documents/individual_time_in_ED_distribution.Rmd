@@ -11,13 +11,14 @@ output: html_document
   
   admColScale <- make_adm_colour_palette()
 
-  ed_los_data_1 <- ed_los_data[ed_los_data$Der_Activity_Month >= 201611 & ed_los_data$Der_Activity_Month <= 201701,]
+  ed_los_data_1 <- ed_los_data[ed_los_data$Der_Activity_Month >= 201508 & ed_los_data$Der_Activity_Month <= 201510,]
   
   ed_los_data_2 <- ed_los_data[ed_los_data$Der_Activity_Month >= 201511 & ed_los_data$Der_Activity_Month <= 201601,]
 
-  plot_ed_dist(ed_los_data_1, cumulative = TRUE, prov_codes = pr) + admColScale + labs(subtitle = "Nov 2016 - Jan 2017")
+  plot_ed_dist(ed_los_data_1, cumulative = TRUE, prov_codes = pr) + admColScale + labs(subtitle = "Aug 2015 - Oct 2015")
   
   cat("  \n")
   
   plot_ed_dist(ed_los_data_2, cumulative = TRUE, prov_codes = pr) + admColScale + labs(subtitle = "Nov 2015 - Jan 2016")
+
 ```
