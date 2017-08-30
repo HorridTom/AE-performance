@@ -60,7 +60,7 @@ plot_performance <- function(df, prov_codes = c("RBZ"), date.col = 'Wk_End_Sun',
                              start.date = "2014-01-01", end.date = "2017-02-28",
                              brk.date = "2016-01-01", max_lower_y_scale = 60,
                              adm_only = FALSE, all_provs = FALSE,
-                             dept_types = c('1','2','3')) {
+                             dept_types = c('1','2','3'), plot.chart = TRUE) {
   # pass df as cleaned 4h perf data from the clean_4h_data function
   
   # lookup full name of provider
@@ -102,7 +102,7 @@ plot_performance <- function(df, prov_codes = c("RBZ"), date.col = 'Wk_End_Sun',
   col5    <-  rgb(096, 189, 104, maxColorValue = 255)
   cols    <- c('col1' = col1, 'col2' = col2, 'col3' = col3, 'col4' = col4)
 
-  pct + geom_line(aes_string(x = 'x', y = 'lcl', group = 'breaks'), colour = '#000000', linetype = 'dashed') +
+  if(plot.chart == TRUE) {pct + geom_line(aes_string(x = 'x', y = 'lcl', group = 'breaks'), colour = '#000000', linetype = 'dashed') +
     geom_line(aes_string(x = 'x', y = 'ucl', group = 'breaks'), colour = '#000000', linetype = 'dashed') +
     geom_line(aes_string(x = 'x', y = 'cl', group = 'breaks'), colour = '#000000', linetype = 1) +
     geom_line(aes_string(x = 'x', y = 'y', group = 'breaks'), colour = '#000000', linetype = 1, lwd = 1.1) + 
@@ -110,7 +110,7 @@ plot_performance <- function(df, prov_codes = c("RBZ"), date.col = 'Wk_End_Sun',
     scale_fill_manual(values = cols) + scale_color_manual(values = cols) +
     labs(title = cht_title, x="Week Ending Sunday", y="Percentage") +
     ylim(ylimlow,100) + scale_x_date(labels = date_format("%Y-%m"),breaks = date_breaks("3 months")) + theme(axis.text.x = element_text(angle=45), plot.title = element_text(hjust = 0.5))
-  
+  } else {df}
     
 }
 
