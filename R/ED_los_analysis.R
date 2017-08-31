@@ -99,6 +99,6 @@ plot_ed_dist <- function(df, prov_codes = c("RBZ"), cumulative = TRUE) {
 make_adm_colour_palette <- function() {
   adm_colours <- RColorBrewer::brewer.pal(8,"Dark2")
   names(adm_colours) <- c("TRUE",NA,NA,"FALSE",NA,NA,NA,"ALL")
-  admColScale <- scale_colour_manual(name="Admitted", values = adm_colours)
+  admColScale <- scale_colour_manual(name="Admission Status", values = adm_colours, labels = c("All","Not admitted","Admitted"))
   admColScale
 }
