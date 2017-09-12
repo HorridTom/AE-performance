@@ -92,7 +92,7 @@ plot_ed_dist <- function(df, prov_codes = c("RBZ"), cumulative = TRUE) {
   
   if(cumulative) {pp <- pp + facet_grid(variable ~ ., scales = "free")}
   pp + geom_vline(xintercept = 16, colour="grey60") + geom_segment(aes(x=0, xend = 16, y = value, yend = value, colour=Admitted), intercepts_4h) + geom_text(aes(x=rep(0,3), y=value-6, label = sprintf("%.1f",value), vjust = rep(-1,3), hjust = rep(0.02,3)), intercepts_4h, size = 2.75, show.legend = FALSE) + ggtitle("Distribution of time in Emergency Department") + xlab("Time in ED") +
-  theme(plot.title = element_text(hjust = 0.5))
+  theme(plot.title = element_text(hjust = 0.5)) + scale_x_discrete(breaks = levels(ed_dist_m$Duration)[c(T, rep(F, 1))])
     
 }
 

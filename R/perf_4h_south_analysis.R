@@ -1,3 +1,7 @@
+library(tidyverse)
+library(ggplot2)
+library(scales)
+
 make_perf_series <- function(df, prov_codes = c("RBZ"), perf_only = FALSE, 
                              adm_only = FALSE, all_provs = FALSE,
                              dept_types = c('1','2','3')) {
@@ -16,7 +20,7 @@ make_perf_series <- function(df, prov_codes = c("RBZ"), perf_only = FALSE,
   } else {
     south_4h <- aggregate(Activity ~ Wk_End_Sun + Prov_Code + Greater_4h, data = data_prov, sum)
   }
-  perf_4h_wide <- spread(data = south_4h, key = Greater_4h, value = Activity)
+  perf_4h_wide <- tidyr::spread(data = south_4h, key = Greater_4h, value = Activity)
   
   colnames(perf_4h_wide)[colnames(perf_4h_wide) == "FALSE"] <- "Within_4h"
   colnames(perf_4h_wide)[colnames(perf_4h_wide) == "TRUE"] <- "Greater_4h"
@@ -90,7 +94,7 @@ plot_performance <- function(df, prov_codes = c("RBZ"), date.col = 'Wk_End_Sun',
   # This is a hack - find better way to modify colours of qicharts
   # Also needs stepped limits
   
-  pct <- tcc(n = Within_4h, d = df$Total, x = df$Wk_End_Sun, data = df, chart = 'p', multiply = 100, prime = TRUE, breaks = c(br.row), runvals = TRUE, cl.lab = TRUE)
+  pct <- qicharts::tcc(n = Within_4h, d = df$Total, x = df$Wk_End_Sun, data = df, chart = 'p', multiply = 100, prime = TRUE, breaks = c(br.row), runvals = TRUE, cl.lab = TRUE)
   
   # chart y limit
   ylimlow <- min(min(pct$data$y, na.rm = TRUE),min(pct$data$lcl, na.rm = TRUE),max_lower_y_scale)
@@ -109,7 +113,7 @@ plot_performance <- function(df, prov_codes = c("RBZ"), date.col = 'Wk_End_Sun',
     geom_point(aes_string(x = 'x', y = 'y', group = 'breaks', fill = 'pcol'), size = 2) + 
     scale_fill_manual(values = cols) + scale_color_manual(values = cols) +
     labs(title = cht_title, x="Week Ending Sunday", y="Percentage") +
-    ylim(ylimlow,100) + scale_x_date(labels = date_format("%Y-%m"), breaks = date_breaks("3 months"), limits = as.Date(c(start.date, end.date))) + theme(axis.text.x = element_text(angle=45), plot.title = element_text(hjust = 0.5))
+    ylim(ylimlow,100) + scale_x_date(labels = date_format("%Y-%m"), breaks = date_breaks("3 months"), limits = as.Date(c(start.date, end.date))) + theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 0.75), plot.title = element_text(hjust = 0.5), axis.line = element_line(colour = "grey60"))
   } else {df}
     
 }
@@ -149,7 +153,7 @@ plot_volume <- function(df, prov_codes = c("RBZ"), date.col = 'Wk_End_Sun',
   
   pp + geom_path() + geom_point() + ylim(0,ylimhigh) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(),
-        axis.line=element_line(colour = "grey75"), axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
+        axis.line=element_line(colour = "grey75"), axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.75)) +
   labs(title = cht_title, x="Week Ending Sunday", y=y_axis_lab) +
   geom_vline(xintercept = as.numeric(br.dt), colour="grey60") +
   scale_x_date(labels = date_format("%Y-%m"),breaks = date_breaks("3 months")) + theme(axis.text.x = element_text(angle=45), plot.title = element_text(hjust = 0.5))
