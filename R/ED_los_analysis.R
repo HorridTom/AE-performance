@@ -80,7 +80,28 @@ plot_ed_dist <- function(df, prov_codes = c("RBZ"), cumulative = TRUE) {
     ed_dist_m <- rbind(ed_dist_m, cm_df)
     
     intercepts_4h <- ed_dist_m[which(ed_dist_m$Duration=="3:45-4:00" & ed_dist_m$variable=="Cumulative Percentage"),which(colnames(ed_dist_m) %in% c("variable", "value", "Admitted"))]
+    intercepts_12h <- ed_dist_m[which(ed_dist_m$Duration=="11:45-12:00" & ed_dist_m$variable=="Cumulative Percentage"),which(colnames(ed_dist_m) %in% c("variable", "value", "Admitted"))]
+    tt95 <- ed_dist_m[which(ed_dist_m$variable=="Cumulative Percentage" & ed_dist_m$value>=95),]
+    time_to_95 <- tt95[tt95$value == ave(tt95$value, tt95$Admitted, FUN=min),]
+    times95 <- paste(sub(".*-","",time_to_95$Duration), collapse = '     ')
     
+    ann_text1 <- data.frame(Duration = "10:15-10:30", value = 40,
+                           variable = factor("Cumulative Percentage",levels=c("Frequency", "Cumulative Percentage")))
+    ann_text2 <- data.frame(Duration = "8:00-8:15", value = 32,
+                            variable = factor("Cumulative Percentage",levels=c("Frequency", "Cumulative Percentage")))
+    ann_text3 <- data.frame(Duration = "8:00-8:15", value = 22,
+                            variable = factor("Cumulative Percentage",levels=c("Frequency", "Cumulative Percentage")))
+    ann_text4 <- data.frame(Duration = "8:00-8:15", value = 12,
+                            variable = factor("Cumulative Percentage",levels=c("Frequency", "Cumulative Percentage")))
+    perfs_4h <- paste(round(intercepts_4h$value, 1), collapse='     ')
+    ann_text5 <- data.frame(Duration = "10:30-10:45", value = 32,
+                            variable = factor("Cumulative Percentage",levels=c("Frequency", "Cumulative Percentage")))
+    perfs_12h <- paste(round(intercepts_12h$value, 1), collapse='     ')
+    ann_text6 <- data.frame(Duration = "10:30-10:45", value = 22,
+                            variable = factor("Cumulative Percentage",levels=c("Frequency", "Cumulative Percentage")))
+    ann_text7 <- data.frame(Duration = "10:30-10:45", value = 12,
+                            variable = factor("Cumulative Percentage",levels=c("Frequency", "Cumulative Percentage")))
+
   } else {
     colnames(ed_dist)[3] <- "value"
     ed_dist_m <- ed_dist
@@ -90,7 +111,17 @@ plot_ed_dist <- function(df, prov_codes = c("RBZ"), cumulative = TRUE) {
   pp <- pp + geom_path() + geom_point() + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                                 axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5), axis.title.y = element_blank())
   
-  if(cumulative) {pp <- pp + facet_grid(variable ~ ., scales = "free")}
+  if(cumulative) {
+    pp <- pp + facet_grid(variable ~ ., scales = "free") +
+    geom_text(aes(group = TRUE, colour = "ALL"), data = ann_text1, label="Not Adm Adm     All", size = 3) +
+    geom_text(aes(group = TRUE, colour = "ALL"), data = ann_text2, label="     % in 4hrs:", size = 3) +
+    geom_text(aes(group = TRUE, colour = "ALL"), data = ann_text3, label="   % in 12hrs:", size = 3) +
+    geom_text(aes(group = TRUE, colour = "ALL"), data = ann_text4, label="Time to 95%:", size = 3) +
+    geom_text(aes(group = TRUE, colour = "ALL"), data = ann_text5, label=perfs_4h, size = 3) +
+    geom_text(aes(group = TRUE, colour = "ALL"), data = ann_text6, label=perfs_12h, size = 3) +
+    geom_text(aes(group = TRUE, colour = "ALL"), data = ann_text7, label=times95, size = 3)
+  }
+  
   pp + geom_vline(xintercept = 16, colour="grey60") + geom_segment(aes(x=0, xend = 16, y = value, yend = value, colour=Admitted), intercepts_4h) + geom_text(aes(x=rep(0,3), y=value-6, label = sprintf("%.1f",value), vjust = rep(-1,3), hjust = rep(0.02,3)), intercepts_4h, size = 2.75, show.legend = FALSE) + ggtitle("Distribution of time in Emergency Department") + xlab("Time in ED") +
   theme(plot.title = element_text(hjust = 0.5)) + scale_x_discrete(breaks = levels(ed_dist_m$Duration)[c(T, rep(F, 1))])
     
