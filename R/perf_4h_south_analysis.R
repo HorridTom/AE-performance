@@ -64,12 +64,15 @@ plot_performance <- function(df, prov_codes = c("RBZ"), date.col = 'Wk_End_Sun',
                              start.date = "2014-01-01", end.date = "2017-02-28",
                              brk.date = "2016-01-01", max_lower_y_scale = 60,
                              adm_only = FALSE, all_provs = FALSE,
-                             dept_types = c('1','2','3'), plot.chart = TRUE) {
+                             dept_types = c('1','2','3'), plot.chart = TRUE,
+                             pr_name = NULL) {
   # pass df as cleaned 4h perf data from the clean_4h_data function
   
-  # lookup full name of provider
+  # if no pr_name passed, lookup full name of provider
   # note written for just one provider
-  pr_name <- df[which(df$Prov_Code == prov_codes),"Prov_Name"][[1]]
+  if (is_null(pr_name)) {
+    pr_name <- df[which(df$Prov_Code == prov_codes),"Prov_Name"][[1]]
+  }
   #cht_title = paste("Weekly percentage ED attendances with time in department < 4h",pr_name,sep="\n")
   if (adm_only) {
     cht_title = paste("Weekly percentage admissions through ED \n with time in department < 4h. Dept. types: ",paste(dept_types,sep="",collapse=","),sep="")
@@ -112,7 +115,7 @@ plot_performance <- function(df, prov_codes = c("RBZ"), date.col = 'Wk_End_Sun',
     geom_line(aes_string(x = 'x', y = 'y', group = 'breaks'), colour = '#000000', linetype = 1, lwd = 1.1) + 
     geom_point(aes_string(x = 'x', y = 'y', group = 'breaks', fill = 'pcol'), size = 2) + 
     scale_fill_manual(values = cols) + scale_color_manual(values = cols) +
-    labs(title = cht_title, x="Week Ending Sunday", y="Percentage") +
+    labs(title = cht_title, x="Week Ending Sunday", y="Percentage", subtitle = pr_name) +
     ylim(ylimlow,100) + scale_x_date(labels = date_format("%Y-%m"), breaks = date_breaks("3 months"), limits = as.Date(c(start.date, end.date))) + theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 0.75), plot.title = element_text(hjust = 0.5), axis.line = element_line(colour = "grey60"))
   } else {df}
     

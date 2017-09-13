@@ -27,7 +27,7 @@ opts_chunk$set(dev="png",
 \newpage
 
 ```{r echo=FALSE, eval=TRUE, include=FALSE}
-pseudonymise = FALSE
+pseudonymise = TRUE
 out <- NULL
 
 # load table of pseudo ids
