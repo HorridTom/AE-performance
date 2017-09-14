@@ -1,10 +1,11 @@
 ---
-title: "Emergency Department Flow Analysis - London"
-author: "Centre for Healthcare Improvement Research"
-date: "31 August 2017"
+title: "Emergency Department Flow Analysis"
+subtitle: "London Unscheduled and Emergency Care Improvement Collaborative"
+author: "Dr. Tom Woodcock, Centre for Healthcare Improvement Research"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
-  pdf_document: default
-  word_document: default
+  pdf_document:
+    toc: true
 mainfont: Helvetica
 sansfont: Helvetica
 latex_engine: xelatex
@@ -24,10 +25,26 @@ opts_chunk$set(dev="png",
                dpi=120)
 ```
 
-\newpage
-
 ```{r echo=FALSE, eval=TRUE, include=FALSE}
 pseudonymise = TRUE
+
+# Select time periods for analysis
+perf.start.date <- "2014-02-01"
+perf.end.date <- "2017-05-01"
+perf.brk.date <- "2016-02-01"
+
+window.1.start <- 201601
+window.1.end <- 201603
+  
+window.2.start <- 201701
+window.2.end <- 201703
+
+w1s <- paste(month.abb[as.numeric(substr(as.character(window.1.start), 5, 6))],substr(as.character(window.1.start), 1, 4),sep=' ')
+w1e <- paste(month.abb[as.numeric(substr(as.character(window.1.end), 5, 6))],substr(as.character(window.1.end), 1, 4),sep=' ')
+w2s <- paste(month.abb[as.numeric(substr(as.character(window.2.start), 5, 6))],substr(as.character(window.2.start), 1, 4),sep=' ')
+w2e <- paste(month.abb[as.numeric(substr(as.character(window.2.end), 5, 6))],substr(as.character(window.2.end), 1, 4),sep=' ')
+
+
 out <- NULL
 
 # load table of pseudo ids
@@ -45,7 +62,36 @@ load(file = "../data/perf_4h_clean.rda")
 source("../R/perf_4h_south_analysis.R")
 
 all_provs <- TRUE
+```
 
+
+\newpage
+
+# Introduction
+
+## Content
+This document contains:
+
+1. Analysis of the weekly performance of each acute hospital Trust in London against the 4-hour target for the period `r max(min(perf_4h_clean$Wk_End_Sun), as.Date(perf.start.date))` to `r min(max(perf_4h_clean$Wk_End_Sun), as.Date(perf.end.date))`. This is presented as follows, in each case the first chart on the page is the performance, and the second is the denominator for that measure:
+i) for all Emergency Department (ED) attendances and all department types, with attendance numbers as a separate chart below
+ii) for ED attendances resulting in admission to hospital, for all department types, with number of admissions shown as a separate chart below
+iii) for ED attendances to type 1 departments, with type 1 attendance numbers as a separate chart below
+iv) for type 1 ED attendances resulting in admission to hospital, with number of admissions through type 1 departments shown as a separate chart below
+2. Analysis of the distribution of time in ED in 15min intervals, for admitted and non-admitted patient flows, for all attendances in two time windows: `r paste(w1s,w1e,sep=' - ')` and `r paste(w2s,w2e,sep=' - ')`. These charts also include a tabulated summary of the distribution by: % within 4hrs and 12hrs, and time for 95% of patients to be through the department.
+
+The control chart for performance against the 4-hour target are p-prime charts, which take account of both variation within the measure and variation due to differences in the denominator over time. More information and further references can be found in this article: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2565828/. The control limits all use a baseline period up to `r perf.brk.date`, and are recalculated after this point.
+
+## Interpretation
+At a high level the time in ED analysis shows different patterns of flow for admitted and non-admitted streams which can be used to inform system diagnostics. Some organisations will benefit from an early focus on non-admitted stream which can create capacity within the system. Some organisations exhibit marked delays in the admitted flow again warranting prioritisation.
+
+The analysis of performance over time shows that as well as different patterns of demand volume and performance, some sites show more variability, and more special cause variation. This indicates a less stable local system, that is likely less resilient.
+
+The aim of piece of work is to highlight these features to help inform each organisation's priorities and to show how this data can be usefully employed as part of a system diagnostic focussed on improvement. Clearly this data will need to be supplemented further by local analysis, and measures from other parts of the system. By measuring at a bottleneck in the urgent and emergency care system, these measures of time in ED contain much useful information relevant to the whole system, and as such are valuable as a resource for improvement.
+
+## Limitations
+This analysis uses Secondary Uses Service (SUS) data, more details are available here: http://content.digital.nhs.uk/sus. This data may show differences from that available locally, and from other reported sources of information. These differences are in part down to the way that the data is cleaned, but also due to historic changes in the way this data is reported. For example in some of the volume analyses it is clear organisations have merged, with large jumps in volume of attendances and admissions. These mergers and organisational changes may be reflected differently in other analyses of similar data. We encourage members of the collaborative to review this data against local analyses and contact the collaborative team if they believe the two to be significantly different for more recent time periods.
+
+```{r echo=FALSE, eval=TRUE, include=FALSE}
 pr<-providerCodes
 pr_name <- "Combined Trusts"
 

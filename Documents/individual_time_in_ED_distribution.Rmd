@@ -11,14 +11,13 @@ output: html_document
   
   admColScale <- make_adm_colour_palette()
 
-  ed_los_data_1 <- ed_los_data[ed_los_data$Der_Activity_Month >= 201601 & ed_los_data$Der_Activity_Month <= 201603,]
+  ed_los_data_1 <- ed_los_data[ed_los_data$Der_Activity_Month >= window.1.start & ed_los_data$Der_Activity_Month <= window.1.end,]
   
-  ed_los_data_2 <- ed_los_data[ed_los_data$Der_Activity_Month >= 201701 & ed_los_data$Der_Activity_Month <= 201703,]
+  ed_los_data_2 <- ed_los_data[ed_los_data$Der_Activity_Month >= window.2.start & ed_los_data$Der_Activity_Month <= window.2.end,]
 
-  tryCatch(plot_ed_dist(ed_los_data_1, cumulative = TRUE, prov_codes = pr) + admColScale + labs(subtitle = "Jan 2016 - Mar 2016"), error=function(e) NULL)
+  tryCatch(plot_ed_dist(ed_los_data_1, cumulative = TRUE, prov_codes = pr) + admColScale + labs(subtitle = paste(w1s,w1e,sep=' - ')), error=function(e) NULL)
   
   cat("  \n")
   
-  tryCatch(plot_ed_dist(ed_los_data_2, cumulative = TRUE, prov_codes = pr) + admColScale + labs(subtitle = "Jan 2017 - Mar 2017"), error=function(e) NULL)
-
+  tryCatch(plot_ed_dist(ed_los_data_2, cumulative = TRUE, prov_codes = pr) + admColScale + labs(subtitle = paste(w2s,w2e,sep=' - ')), error=function(e) NULL)
 ```
