@@ -39,6 +39,32 @@ make_perf_series <- function(df, prov_codes = c("RBZ"), perf_only = FALSE,
 
 }
 
+
+get_performance <- function(df, start_date, end_date, prov_codes = c("RQM"), adm_only = FALSE, all_provs = FALSE,
+                            dept_types = c('1','2','3')) {
+  
+  ps <- make_perf_series(df = df, prov_codes = prov_codes, adm_only = adm_only,
+                         all_provs = all_provs, dept_types = dept_types)
+  
+  total_pts <- dplyr::filter(ps, Wk_End_Sun >= start_date, Wk_End_Sun <= end_date) %>%
+            dplyr::summarize(total = sum(Total))
+  met_target <- dplyr::filter(ps, Wk_End_Sun >= start_date, Wk_End_Sun <= end_date) %>%
+            dplyr::summarize(total = sum(Within_4h))
+  
+  ((met_target/total_pts)*100)[1,1]
+  
+}
+
+
+perf_tab <- function(org_table, perf_df, start_date, end_date, perf_col_name = "performance") {
+  
+  pt <- org_table %>% rowwise() %>% 
+    mutate(performance = get_performance(df = perf_df,
+                                         start_date = start_date, end_date = end_date, prov_codes = Prov_Code))
+  pt %>% rename(!!perf_col_name := performance)
+}
+
+
 write_for_algorithm <- function(df) {
   
   providerCodes <- unique(df$Prov_Code)
