@@ -6,9 +6,6 @@ date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   pdf_document:
     toc: true
-mainfont: Helvetica
-sansfont: Helvetica
-latex_engine: xelatex
 ---
 
 ```{r setup, include=FALSE}
