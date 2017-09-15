@@ -3,9 +3,11 @@ library(ggplot2)
 library(scales)
 
 make_perf_series <- function(df, prov_codes = c("RBZ"), perf_only = FALSE, 
-                             adm_only = FALSE, all_provs = FALSE,
+                             adm_only = FALSE, all_provs = FALSE, merge_provs = NULL,
                              dept_types = c('1','2','3')) {
   df <- df[which(df$AEA_Department_Type %in% dept_types),]
+  
+  if(is.null(merge_provs)) {merge_provs <- all_provs}
   
   if (!all_provs) {data_prov <- df[df$Prov_Code %in% prov_codes,]} else {
     data_prov <- df
@@ -15,7 +17,7 @@ make_perf_series <- function(df, prov_codes = c("RBZ"), perf_only = FALSE,
     data_prov <- data_prov[data_prov$Admitted == TRUE,]
   }
   
-  if (all_provs) {
+  if (merge_provs) {
     south_4h <- aggregate(Activity ~ Wk_End_Sun + Greater_4h, data = data_prov, sum)
   } else {
     south_4h <- aggregate(Activity ~ Wk_End_Sun + Prov_Code + Greater_4h, data = data_prov, sum)
@@ -62,6 +64,13 @@ perf_tab <- function(org_table, perf_df, start_date, end_date, perf_col_name = "
     mutate(performance = get_performance(df = perf_df,
                                          start_date = start_date, end_date = end_date, prov_codes = Prov_Code))
   pt %>% rename(!!perf_col_name := performance)
+}
+
+perf_weekly_series <- function(perf_df) {
+  
+  ps <- make_perf_series(df = perf_df, all_provs = TRUE, merge_provs = FALSE)
+  ps %>% select(Wk_End_Sun, Prov_Code, Performance) %>% spread(key = Prov_Code, value = Performance)
+  
 }
 
 
