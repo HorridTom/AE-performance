@@ -261,3 +261,18 @@ plot_volume_c <- function(df, prov_codes = c("RBZ"), date.col = 'Wk_End_Sun',
   } else {df}
   
 }
+
+
+deseasonalise_performance <- function(df, prov_codes = c("RQM"), 
+                                      adm_only = FALSE, all_provs = FALSE, merge_provs = NULL,
+                                      dept_types = c('1','2','3'),
+                                      baseline_periods = NULL) {
+  
+  ps <- make_perf_series(df = df, prov_codes = prov_codes, adm_only = adm_only, dept_types = dept_types)
+  ps$Wk <- lubridate::week(ps$Wk_End_Sun)
+  ps$Mt <- lubridate::month(ps$Wk_End_Sun)
+  ps$Qt <- lubridate::quarter(ps$Wk_End_Sun)
+  ps$Yr <- lubridate::year(ps$Wk_End_Sun)
+  
+  deseasonalise(df = ps, season_col = Mt, period_col = Yr, baseline_periods = baseline_periods)
+}
