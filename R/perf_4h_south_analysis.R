@@ -57,13 +57,56 @@ get_performance <- function(df, start_date, end_date, prov_codes = c("RQM"), adm
   
 }
 
+get_num_outside_limits <- function(df, prov_codes = c("RQM"), date.col = 'Wk_End_Sun',
+                                   cht.start.date = "2014-01-01", cht.end.date = "2017-06-30",
+                                   cht.brk.date = "2016-02-01",
+                                   period.start = "2017-01-01", period.end = "2017-06-30",
+                                   adm_only = FALSE,
+                                   dept_types = c('1','2','3'), lower.only = TRUE) {
+  
+  perf_cht <- plot_performance(df = df, prov_codes = prov_codes, date.col = date.col,
+                               start.date = cht.start.date, end.date = cht.end.date,
+                               brk.date = cht.brk.date, adm_only = adm_only,
+                               dept_types = dept_types)
+  
+  pcls <- perf_cht$data$limits.signal
+  pcx <- perf_cht$data$x
+  pcy <- perf_cht$data$y
+  lcl <- perf_cht$data$lcl
+  rule1_breaks <- data.frame(pcx,pcls,pcy,lcl)
+  rule1_breaks$lower.breaks <- rule1_breaks$pcy < rule1_breaks$lcl
+  if(!lower.only) {
+    r1binrange <- rule1_breaks %>%
+      filter(pcx <= as.Date(period.end), pcx >= as.Date(period.start)) %>%
+      summarise(pts_out_cl = sum(pcls))
+  } else {
+    r1binrange <- rule1_breaks %>%
+      filter(pcx <= as.Date(period.end), pcx >= as.Date(period.start)) %>%
+      summarise(pts_below_lcl = sum(lower.breaks))
+    }
+  
+  r1binrange[1,1]
+}
 
-perf_tab <- function(org_table, perf_df, start_date, end_date, perf_col_name = "performance") {
+
+perf_tab <- function(org_table, perf_df, start_date, end_date, cht.start.date = "2014-01-01",
+                     cht.end.date = "2017-06-30", cht.brk.date = "2016-02-01",
+                     perf_col_name = "Performance", stability_col_name = "Stability",
+                     lower_stab_col_name = "Lower.Stability") {
   
   pt <- org_table %>% rowwise() %>% 
     mutate(performance = get_performance(df = perf_df,
-                                         start_date = start_date, end_date = end_date, prov_codes = Prov_Code))
-  pt %>% rename(!!perf_col_name := performance)
+                                         start_date = start_date, end_date = end_date,
+                                         prov_codes = Prov_Code)) %>%
+    mutate(stability = get_num_outside_limits(df = perf_df,
+                                              period.start = start_date, period.end = end_date,
+                                              prov_codes = Prov_Code, lower.only = FALSE)) %>%
+    mutate(lowerstability = get_num_outside_limits(df = perf_df,
+                                              period.start = start_date, period.end = end_date,
+                                              prov_codes = Prov_Code, lower.only = TRUE))
+    
+  pt %>% rename(!!perf_col_name := performance, !!stability_col_name := stability,
+                !!lower_stab_col_name := lowerstability)
 }
 
 perf_weekly_series <- function(perf_df) {
@@ -96,8 +139,8 @@ plot_performance_qcc <- function(df) {
 }
 
 plot_performance <- function(df, prov_codes = c("RBZ"), date.col = 'Wk_End_Sun',
-                             start.date = "2014-01-01", end.date = "2017-02-28",
-                             brk.date = "2016-01-01", max_lower_y_scale = 60,
+                             start.date = "2014-01-01", end.date = "2017-06-30",
+                             brk.date = "2016-02-01", max_lower_y_scale = 60,
                              adm_only = FALSE, all_provs = FALSE,
                              dept_types = c('1','2','3'), plot.chart = TRUE,
                              pr_name = NULL) {
