@@ -1,0 +1,89 @@
+---
+title: "Emergency Department Flow Analysis"
+subtitle: "London Unscheduled and Emergency Care Improvement Collaborative"
+author: "Dr. Tom Woodcock, Centre for Healthcare Improvement Research"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  pdf_document:
+    toc: false
+classoption: landscape
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+library(ggplot2)
+library(ggalt)
+library(RColorBrewer)
+library(reshape2)
+library(qicharts)
+library(tidyr)
+library(scales)
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+opts_chunk$set(dev="png", 
+               dev.args=list(type="cairo"),
+               dpi=120)
+
+# load table of pseudo ids
+load(file = "../data/organisation_codes.rda")
+
+# setup distribution code and data
+load(file = "../data/ED-los-clean.rda")
+source("../R/ED_los_analysis.R")
+ed_los_data <- make_bins(ed_los_clean, default_labels = FALSE)
+
+providerCodes <- organisation_codes$Prov_Code
+
+# setup performance over time code and data
+load(file = "../data/perf_4h_clean.rda")
+source("../R/perf_4h_south_analysis.R")
+
+cht.start.date <- "2014-02-01"
+cht.end.date <- "2017-05-01"
+cht.brk.date <- "2016-02-01"
+
+classification.start.date <- "2017-01-01"
+classification.end.date <- "2017-06-30"
+
+```
+
+## Classification of Trusts by Performance and Stability
+
+This is based on analysis of the weekly performance of each acute hospital Trust in London against the 4-hour target for the period `r max(min(perf_4h_clean$Wk_End_Sun), as.Date(classification.start.date))` to `r min(max(perf_4h_clean$Wk_End_Sun), as.Date(classification.end.date))`. Control limits calculated for the periof `r cht.brk.date` to `r cht.end.date`.
+
+```{r echo=FALSE, eval=TRUE, include=TRUE}
+
+pt <- perf_tab(org_table = organisation_codes, perf_df = perf_4h_clean, start_date = classification.start.date, end_date = classification.end.date, cht.start.date = cht.start.date, cht.end.date = cht.end.date, cht.brk.date = cht.brk.date, stability_col_name = "Wks_outside_limits", lower_stab_col_name = "Wks_below_limit")
+
+ptt <- pt
+ptt$Prov_Name <- substr(ptt$Prov_Name, 1, 20)
+ptt$Performance <- round(ptt$Performance, digits = 1)
+
+knitr::kable(ptt[,2:7])
+
+```
+
+```{r, fig.height=5, fig.width=7, echo=FALSE, results='asis', cache=TRUE}
+
+library(RColorBrewer)
+myColors <- brewer.pal(8,"Set1")
+names(myColors) <- c("South East", "North East", "South West", NA, "North West", NA, NA, "North Central")
+colScale <- scale_colour_manual(name = "STP",values = myColors)
+
+plot_title = paste("Performance vs stability: ", max(min(perf_4h_clean$Wk_End_Sun), as.Date(classification.start.date)), " to ", min(max(perf_4h_clean$Wk_End_Sun), as.Date(classification.end.date)))
+
+pt <- na.omit(pt)
+cl <- kmeans(scale(pt[,c(5,7)]), 3, nstart = 20)
+pt <- data.frame(pt,cl$cluster)
+
+ggplot(data = pt, aes(x = Wks_below_limit, y = Performance, label = pseudoid, colour = STP)) +    geom_point() + geom_text(aes(label = pseudoid, hjust=-0.5,vjust=0), show.legend = FALSE) +
+  xlab("No. weeks 4hr performance below lower control limit") +
+  ylab("4hr performance for period") + ggtitle(plot_title) + 
+  xlim(0,10) + ylim(70,100) +
+  scale_x_continuous(breaks=seq(0,10,1)) +
+  geom_encircle(aes(x = Wks_below_limit, y = Performance), data=pt[which(pt$cl.cluster == 1),],color="black", size = 2, expand = 0.03) +
+  geom_encircle(aes(x = Wks_below_limit, y = Performance), data=pt[which(pt$cl.cluster == 2),],color="black", size = 2, expand = 0.03) +
+  geom_encircle(aes(x = Wks_below_limit, y = Performance), data=pt[which(pt$cl.cluster == 3),],color="black", size = 2, expand = 0.03) +
+  colScale
+
+#
+```
