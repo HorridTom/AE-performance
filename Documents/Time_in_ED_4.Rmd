@@ -52,7 +52,9 @@ load(file = "../data/ED-los-clean.rda")
 source("../R/ED_los_analysis.R")
 ed_los_data <- make_bins(ed_los_clean, default_labels = FALSE)
 
+# List of provider codes to include
 providerCodes <- organisation_codes$Prov_Code
+#providerCodes <- c("RJ7","RAX")
 
 # setup performance over time code and data
 load(file = "../data/perf_4h_clean.rda")
