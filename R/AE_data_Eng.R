@@ -231,13 +231,6 @@ getAEdata_urls <- function () {
 	
 }
 
-getAEdata_urls_monthly <- function() {
-  
-  #This function returns the urls for NHS England A&E data *.xls files from two pages
-  #yielding addresses for monthly data from June 2015 to (in principle) April 2017
-  
-  
-}
 
 
 getAEdata_page_urls <- function (index_url) {
@@ -268,31 +261,6 @@ getAEdata_page_urls <- function (index_url) {
 
 }
 
-getAEdata_page_urls_monthly <- function(index_url) {
-  #This function returns the urls for NHS England A&E data *.xls files from one
-  #of the monthly data index pages
-  
-  #Get the html from the index website
-  con <- url(index_url, "r")
-  html_lines <- readLines(con)
-  
-  #Close connection
-  close(con)
-  
-  #Look for lines that contain the signature part of the url and the signature text
-  data_url_lines <- grep("^(?=.*xls)((?!Quarter).)*$",html_lines, perl=TRUE)
-  xlsdata_url_lines <- grep("AE-by-provider",html_lines[data_url_lines])
-  NHSE_xlsdata_lines <- html_lines[data_url_lines][xlsdata_url_lines]
-  
-  #Extract urls from html lines
-  starts <- regexpr("http",NHSE_xlsdata_lines)
-  ends <- regexpr(".xls",NHSE_xlsdata_lines) + 3
-  urls <- substr(NHSE_xlsdata_lines, starts, ends)
-  
-  #Return urls
-  return(urls)
-  
-}
 
 
 fix2015formats <- function(df) {

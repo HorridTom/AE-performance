@@ -32,11 +32,11 @@ packrat/lib*/
 # Packrat source folder
 packrat/src*/
 # Raw data
-/data-raw/*.xls*
+/data-raw/**/*.xls*
 .Rproj.user
 # Data
 /data
-*.csv
+**/*.csv
 inst/doc
 # Documents
 /Documents/*.pdf
