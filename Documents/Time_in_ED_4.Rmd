@@ -23,18 +23,18 @@ opts_chunk$set(dev="png",
 ```
 
 ```{r echo=FALSE, eval=TRUE, include=FALSE}
-pseudonymise = TRUE
+pseudonymise = FALSE
 
 # Select time periods for analysis
 perf.start.date <- "2014-02-01"
-perf.end.date <- "2017-05-01"
+perf.end.date <- "2017-10-01"
 perf.brk.date <- "2016-02-01"
 
-window.1.start <- 201601
-window.1.end <- 201603
+window.1.start <- 201606
+window.1.end <- 201608
   
-window.2.start <- 201701
-window.2.end <- 201703
+window.2.start <- 201706
+window.2.end <- 201708
 
 w1s <- paste(month.abb[as.numeric(substr(as.character(window.1.start), 5, 6))],substr(as.character(window.1.start), 1, 4),sep=' ')
 w1e <- paste(month.abb[as.numeric(substr(as.character(window.1.end), 5, 6))],substr(as.character(window.1.end), 1, 4),sep=' ')
