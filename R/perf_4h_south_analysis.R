@@ -4,8 +4,9 @@ library(scales)
 
 make_perf_series <- function(df, prov_codes = c("RBZ"), perf_only = FALSE, 
                              adm_only = FALSE, all_provs = FALSE, merge_provs = NULL,
-                             dept_types = c('1','2','3')) {
+                             dept_types = c('1','2','3'), date_col = 'Wk_End_Sun') {
   df <- df[which(df$AEA_Department_Type %in% dept_types),]
+  df$datecol <- df[, date_col][[1]] 
   
   if(is.null(merge_provs)) {merge_provs <- all_provs}
   
@@ -18,9 +19,9 @@ make_perf_series <- function(df, prov_codes = c("RBZ"), perf_only = FALSE,
   }
   
   if (merge_provs) {
-    south_4h <- aggregate(Activity ~ Wk_End_Sun + Greater_4h, data = data_prov, sum)
+    south_4h <- aggregate(Activity ~ datecol + Greater_4h, data = data_prov, sum)
   } else {
-    south_4h <- aggregate(Activity ~ Wk_End_Sun + Prov_Code + Greater_4h, data = data_prov, sum)
+    south_4h <- aggregate(Activity ~ datecol + Prov_Code + Greater_4h, data = data_prov, sum)
   }
   perf_4h_wide <- tidyr::spread(data = south_4h, key = Greater_4h, value = Activity)
   
@@ -30,13 +31,14 @@ make_perf_series <- function(df, prov_codes = c("RBZ"), perf_only = FALSE,
   perf_4h_wide$Total <- perf_4h_wide$Within_4h + perf_4h_wide$Greater_4h
   perf_4h_wide$Performance <- perf_4h_wide$Within_4h / perf_4h_wide$Total
   
-  perf_4h_wide <- perf_4h_wide[order(perf_4h_wide$Wk_End_Sun),]
+  perf_4h_wide <- perf_4h_wide[order(perf_4h_wide$datecol),]
   
   if (perf_only) {
     perf_4h_wide <- perf_4h_wide$Performance
   }
   
-
+  perf_4h_wide[,date_col] <- perf_4h_wide$datecol
+  perf_4h_wide$datecol <- NULL
   perf_4h_wide
 
 }
@@ -143,7 +145,7 @@ plot_performance <- function(df, prov_codes = c("RBZ"), date.col = 'Wk_End_Sun',
                              brk.date = "2016-02-01", max_lower_y_scale = 60,
                              adm_only = FALSE, all_provs = FALSE,
                              dept_types = c('1','2','3'), plot.chart = TRUE,
-                             pr_name = NULL) {
+                             pr_name = NULL, x_title = "Week Ending Sunday") {
   # pass df as cleaned 4h perf data from the clean_4h_data function
   
   # if no pr_name passed, lookup full name of provider
@@ -159,7 +161,7 @@ plot_performance <- function(df, prov_codes = c("RBZ"), date.col = 'Wk_End_Sun',
   }
   
   df <- make_perf_series(df = df, prov_codes = prov_codes, adm_only = adm_only,
-                         all_provs = all_provs, dept_types = dept_types)
+                         all_provs = all_provs, dept_types = dept_types, date_col = date.col)
   
   st.dt <- as.Date(start.date)
   ed.dt <- as.Date(end.date)
@@ -175,7 +177,7 @@ plot_performance <- function(df, prov_codes = c("RBZ"), date.col = 'Wk_End_Sun',
   # This is a hack - find better way to modify colours of qicharts
   # Also needs stepped limits
   
-  pct <- qicharts::tcc(n = Within_4h, d = df$Total, x = df$Wk_End_Sun, data = df, chart = 'p', multiply = 100, prime = TRUE, breaks = c(br.row), runvals = TRUE, cl.lab = TRUE)
+  pct <- qicharts::tcc(n = Within_4h, d = df$Total, x = df[,date.col], data = df, chart = 'p', multiply = 100, prime = TRUE, breaks = c(br.row), runvals = TRUE, cl.lab = TRUE)
   
   # chart y limit
   ylimlow <- min(min(pct$data$y, na.rm = TRUE),min(pct$data$lcl, na.rm = TRUE),max_lower_y_scale)
@@ -193,7 +195,7 @@ plot_performance <- function(df, prov_codes = c("RBZ"), date.col = 'Wk_End_Sun',
     geom_line(aes_string(x = 'x', y = 'y', group = 'breaks'), colour = '#000000', linetype = 1, lwd = 1.1) + 
     geom_point(aes_string(x = 'x', y = 'y', group = 'breaks', fill = 'pcol'), size = 2) + 
     scale_fill_manual(values = cols) + scale_color_manual(values = cols) +
-    labs(title = cht_title, x="Week Ending Sunday", y="Percentage", subtitle = pr_name) +
+    labs(title = cht_title, x= x_title, y="Percentage", subtitle = pr_name) +
     ylim(ylimlow,100) + scale_x_date(labels = date_format("%Y-%m"), breaks = date_breaks("3 months"), limits = as.Date(c(start.date, end.date))) + theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 0.75), plot.title = element_text(hjust = 0.5), axis.line = element_line(colour = "grey60"))
   } else {df}
     
@@ -203,8 +205,9 @@ plot_volume <- function(df, prov_codes = c("RBZ"), date.col = 'Wk_End_Sun',
                         start.date = "2014-01-01", end.date = "2017-02-28",
                         brk.date = "2016-01-01", min_upper_y_scale = 3000,
                         adm_only = FALSE, all_provs = FALSE,
-                        dept_types = c('1','2','3')) {
+                        dept_types = c('1','2','3'), x_title = "Week Ending Sunday") {
   # pass df as cleaned 4h perf data from the clean_4h_data function
+  
   
   # lookup full name of provider
   # note written for just one provider
@@ -220,6 +223,8 @@ plot_volume <- function(df, prov_codes = c("RBZ"), date.col = 'Wk_End_Sun',
   
   df <- make_perf_series(df = df, prov_codes = prov_codes, adm_only = adm_only, all_provs = all_provs, dept_types = dept_types)
   
+  df$datecol <- df[, date.col]
+  
   st.dt <- as.Date(start.date)
   ed.dt <- as.Date(end.date)
   br.dt <- as.Date(brk.date)
@@ -230,12 +235,12 @@ plot_volume <- function(df, prov_codes = c("RBZ"), date.col = 'Wk_End_Sun',
   # chart y limit
   ylimhigh <- max(max(df$Total),min_upper_y_scale)
   
-  pp <- ggplot(data = df, aes(x = Wk_End_Sun, y = Total))
+  pp <- ggplot(data = df, aes(x = datecol, y = Total))
   
   pp + geom_path() + geom_point() + ylim(0,ylimhigh) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(),
         axis.line=element_line(colour = "grey75"), axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.75)) +
-  labs(title = cht_title, x="Week Ending Sunday", y=y_axis_lab) +
+  labs(title = cht_title, x=x_title, y=y_axis_lab) +
   geom_vline(xintercept = as.numeric(br.dt), colour="grey60") +
   scale_x_date(labels = date_format("%Y-%m"),breaks = date_breaks("3 months")) + theme(axis.text.x = element_text(angle=45), plot.title = element_text(hjust = 0.5))
   
@@ -247,7 +252,7 @@ plot_volume_c <- function(df, prov_codes = c("RBZ"), date.col = 'Wk_End_Sun',
                              brk.date = "2016-01-01", min_upper_y_scale = 3000,
                              adm_only = FALSE, all_provs = FALSE,
                              dept_types = c('1','2','3'), plot.chart = TRUE,
-                             pr_name = NULL) {
+                             pr_name = NULL, x_title = "Week Ending Sunday") {
   # pass df as cleaned 4h perf data from the clean_4h_data function
   
   # if no pr_name passed, lookup full name of provider
@@ -265,7 +270,9 @@ plot_volume_c <- function(df, prov_codes = c("RBZ"), date.col = 'Wk_End_Sun',
   }
   
   df <- make_perf_series(df = df, prov_codes = prov_codes, adm_only = adm_only,
-                         all_provs = all_provs, dept_types = dept_types)
+                         all_provs = all_provs, dept_types = dept_types, date_col = date.col)
+  
+  df$datecol <- df[, date.col]
   
   st.dt <- as.Date(start.date)
   ed.dt <- as.Date(end.date)
@@ -281,7 +288,7 @@ plot_volume_c <- function(df, prov_codes = c("RBZ"), date.col = 'Wk_End_Sun',
   # This is a hack - find better way to modify colours of qicharts
   # Also needs stepped limits
   
-  pct <- qicharts::tcc(n = Total, d = rep(1, nrow(df)), x = df$Wk_End_Sun, data = df, chart = 'u', prime = TRUE, breaks = c(br.row), runvals = TRUE, cl.lab = TRUE)
+  pct <- qicharts::tcc(n = Total, d = rep(1, nrow(df)), x = df$datecol, data = df, chart = 'u', prime = TRUE, breaks = c(br.row), runvals = TRUE, cl.lab = TRUE)
   
   # chart y limit
   ylimhigh <- max(max(df$Total),min_upper_y_scale)
@@ -299,7 +306,7 @@ plot_volume_c <- function(df, prov_codes = c("RBZ"), date.col = 'Wk_End_Sun',
       geom_line(aes_string(x = 'x', y = 'y', group = 'breaks'), colour = '#000000', linetype = 1, lwd = 1.1) + 
       geom_point(aes_string(x = 'x', y = 'y', group = 'breaks', fill = 'pcol'), size = 2) + 
       scale_fill_manual(values = cols) + scale_color_manual(values = cols) +
-      labs(title = cht_title, x="Week Ending Sunday", y=y_axis_lab, subtitle = pr_name) +
+      labs(title = cht_title, x=x_title, y=y_axis_lab, subtitle = pr_name) +
       ylim(0,ylimhigh) + scale_x_date(labels = date_format("%Y-%m"), breaks = date_breaks("3 months"), limits = as.Date(c(start.date, end.date))) + theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 0.75), plot.title = element_text(hjust = 0.5), axis.line = element_line(colour = "grey60"))
   } else {df}
   
