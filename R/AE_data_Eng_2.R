@@ -65,17 +65,28 @@ download_AE_files <- function(file_urls) {
   
   lapply(file_urls, function(x) {
     fn <- paste('data-raw/sitreps',stringr::str_match(x, f_name_regex)[,2],sep='/')
-    download.file(x,fn)
+    download.file(x,fn, mode = 'wb')
   })
   
 }
 
 
-load_AE_files <- function(directory = 'data-raw/sitreps/') {
+load_AE_files <- function(directory = 'data-raw/sitreps/', pkg = 'readxl') {
   
   fileNames <- Sys.glob(paste(directory,'*AE-by-provider*.xls',sep=''))
-  dataList <- lapply(fileNames, function(x) {readxl::read_excel(x, sheet = 1, col_names = FALSE)})
-  dataList
+  
+  dataList <- NULL
+  if (pkg == 'readxl') {
+    dataList <- lapply(fileNames, function(x) {readxl::read_excel(x, sheet = 1, col_names = FALSE)})
+  } else if (pkg == 'gdata') {
+    dataList <- lapply(fileNames, function(x) {
+      y <- gdata::read.xls(x, as.is = TRUE)
+      colnames(y) <- paste('X__',c(1:25),sep='')
+      y
+    })
+  }
+    
+    dataList
 }
 
 
