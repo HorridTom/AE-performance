@@ -145,3 +145,27 @@ get_date <- function(raw_data) {
   lubridate::myd(paste(date_chr,'1st',sep=' '))
   
 }
+
+
+make_new_variables <- function(AE_data) {
+  
+  AE_data <- AE_data %>% mutate(Att_Typ1_NotBr = Att_Typ1 - Att_Typ1_Br,
+                                Att_Typ2_NotBr = Att_Typ2 - Att_Typ2_Br,
+                                Att_Typ3_NotBr = Att_Typ3 - Att_Typ3_Br,
+                                Att_All_NotBr = Att_All - Att_All_Br,
+                                E_Adm_Not4hBr_D = E_Adm_All_ED - E_Adm_4hBr_D)
+  
+  AE_data
+  
+}
+
+
+make_p4h_from_sitreps <- function(AE_data) {
+  # First select only the columns needed for the combinations of flag variables
+  
+  # Now gather all but org info and month
+  
+  # Create flag columns
+  
+  # Rename as needed
+}
