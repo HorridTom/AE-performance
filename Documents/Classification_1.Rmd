@@ -38,11 +38,11 @@ load(file = "../data/perf_4h_clean.rda")
 source("../R/perf_4h_south_analysis.R")
 
 cht.start.date <- "2014-02-01"
-cht.end.date <- "2017-05-01"
+cht.end.date <- "2017-10-01"
 cht.brk.date <- "2016-02-01"
 
-classification.start.date <- "2017-01-01"
-classification.end.date <- "2017-06-30"
+classification.start.date <- "2017-03-01"
+classification.end.date <- "2017-09-30"
 
 ```
 
@@ -62,7 +62,7 @@ knitr::kable(ptt[,2:7])
 
 ```
 
-```{r, fig.height=5, fig.width=7, echo=FALSE, results='asis', cache=TRUE}
+```{r, fig.height=5, fig.width=7, echo=FALSE, results='asis', cache=FALSE}
 
 library(RColorBrewer)
 myColors <- brewer.pal(8,"Set1")
