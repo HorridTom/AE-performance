@@ -172,11 +172,28 @@ make_new_variables <- function(AE_data) {
 
 
 make_p4h_from_sitreps <- function(AE_data) {
-  # First select only the columns needed for the combinations of flag variables
+  
+  # Add additional columns to make transformation simpler
+  AE_data <- make_new_variables(AE_data)
+  
+  # Select only the columns needed for the combinations of flag variables
+  AE_data <- AE_data %>% select(Prov_Code, Prov_Name, Region, Month_Start,
+                           Att_All_NotBr, Att_All_Br, E_Adm_Not4hBr_D, E_Adm_4hBr_D)
   
   # Now gather all but org info and month
+  df <- AE_data %>% gather(key, value, -Prov_Code, -Prov_Name, -Region, -Month_Start)
   
   # Create flag columns
+  df$Admitted <- grepl('E_Adm*', df$key)
+  df$Greater_4h <- grepl('*_Br*|*_4hBr_*', df$key)
+  df$Greater_12h <- NA
+  df$AEA_Department_Type <- NA
   
-  # Rename as needed
+  # Rename
+  df <- df %>% rename(Activity = value)
+  
+  # Remove redundant key column
+  df$key <- NULL
+  
+  df
 }
