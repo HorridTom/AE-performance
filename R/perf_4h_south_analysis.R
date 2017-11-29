@@ -221,7 +221,7 @@ plot_volume <- function(df, prov_codes = c("RBZ"), date.col = 'Wk_End_Sun',
     y_axis_lab = "Attendances"
   }
   
-  df <- make_perf_series(df = df, prov_codes = prov_codes, adm_only = adm_only, all_provs = all_provs, dept_types = dept_types)
+  df <- make_perf_series(df = df, prov_codes = prov_codes, adm_only = adm_only, all_provs = all_provs, dept_types = dept_types, date_col = date.col)
   
   df$datecol <- df[, date.col]
   
