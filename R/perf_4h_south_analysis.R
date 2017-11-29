@@ -6,7 +6,14 @@ make_perf_series <- function(df, prov_codes = c("RBZ"), perf_only = FALSE,
                              adm_only = FALSE, all_provs = FALSE, merge_provs = NULL,
                              dept_types = c('1','2','3'), date_col = 'Wk_End_Sun') {
   df <- df[which(df$AEA_Department_Type %in% dept_types),]
-  df$datecol <- df[, date_col][[1]] 
+  
+  # TODO: This is a horrible hack - use tidyverse throughout to avoid?
+  newdatecol <- df[, date_col]
+  if (class(newdatecol) == "Date") {
+    df$datecol <- newdatecol
+  } else {
+    df$datecol <- newdatecol[[1]]
+  }
   
   if(is.null(merge_provs)) {merge_provs <- all_provs}
   
