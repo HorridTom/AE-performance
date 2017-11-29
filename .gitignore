@@ -42,3 +42,4 @@ inst/doc
 /Documents/*.pdf
 /Documents/*_cache/
 /Documents/*_files/
+/Documents/data-raw/
