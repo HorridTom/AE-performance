@@ -42,10 +42,11 @@ make_perf_series <- function(df, prov_codes = c("RBZ"), perf_only = FALSE,
   
   if (perf_only) {
     perf_4h_wide <- perf_4h_wide$Performance
+  } else {
+    perf_4h_wide[,date_col] <- perf_4h_wide$datecol
+    perf_4h_wide$datecol <- NULL
   }
   
-  perf_4h_wide[,date_col] <- perf_4h_wide$datecol
-  perf_4h_wide$datecol <- NULL
   perf_4h_wide
 
 }
@@ -126,11 +127,11 @@ perf_weekly_series <- function(perf_df) {
 }
 
 
-write_for_algorithm <- function(df) {
+write_for_algorithm <- function(df, ...) {
   
   providerCodes <- unique(df$Prov_Code)
   for (prov in providerCodes) {
-    df_out <- make_perf_series(df, prov_codes = prov, perf_only = TRUE)
+    df_out <- make_perf_series(df, prov_codes = prov, perf_only = TRUE, ...)
     write.table(df_out, file = paste("data-out/",prov,"_perf.csv",sep=""),row.names = FALSE, col.names = FALSE, sep=",")
   }
   
