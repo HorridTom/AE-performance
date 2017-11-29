@@ -1,7 +1,9 @@
-getAE_data <- function() {
+getAE_data <- function(update_data = TRUE) {
   
-  urls <- getAEdata_urls_monthly()
-  download_AE_files(urls)
+  if(update_data) {
+    urls <- getAEdata_urls_monthly()
+    download_AE_files(urls)
+  }
   rawDataList <- load_AE_files()
   
   if(!all(unlist(lapply(rawDataList, check_format)))) {
