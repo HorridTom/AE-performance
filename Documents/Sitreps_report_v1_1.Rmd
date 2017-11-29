@@ -1,0 +1,95 @@
+---
+title: "A&E Attendances and Emergency Admissions"
+subtitle: "London Unscheduled and Emergency Care Improvement Collaborative"
+author: "Dr. Tom Woodcock, Centre for Healthcare Improvement Research"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  pdf_document:
+    toc: true
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(knitr)
+library(ggplot2)
+library(RColorBrewer)
+library(reshape2)
+library(qicharts)
+library(scales)
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+opts_chunk$set(dev="png", 
+               dev.args=list(type="cairo"),
+               dpi=120)
+```
+
+```{r echo=FALSE, eval=TRUE, include=FALSE}
+pseudonymise = FALSE
+# IF update_data = TRUE, will download all the data from NHS England website, otherwise,
+# use files (previously downloaded) in /data-raw/sitreps.
+update_data = TRUE
+
+out <- NULL
+
+# setup distribution code and data
+source("../R/AE_data_Eng_2.R")
+source("../R/perf_4h_south_analysis.R")
+
+# Download the data
+AE_data <- getAE_data(update_data = update_data)
+
+
+sitrep_perf <- make_p4h_from_sitreps(AE_data)
+
+# List of provider codes to include
+
+provLookup <- sitrep_perf[!duplicated(sitrep_perf[,c('Prov_Code')]),c('Prov_Code','Prov_Name')]
+provLookup <- provLookup %>% arrange(Prov_Name)
+providerCodes <- provLookup$Prov_Code
+
+# Select time periods for analysis
+perf.start.date <- "2015-01-01"
+perf.end.date <- "2017-11-01"
+perf.brk.date <- "2016-07-01"
+
+#providerCodes <- c("RQM")
+
+all_provs <- TRUE
+```
+
+
+\newpage
+
+# Introduction
+
+## Content
+
+
+## Interpretation
+
+## Limitations
+
+
+```{r echo=FALSE, eval=TRUE, include=FALSE}
+
+for(pr_elt in providerCodes){
+    pr_name <- provLookup[which(provLookup$Prov_Code == pr_elt),'Prov_Name'][[1,1]]
+    pr <- c(pr_elt)
+    pr<-pr #update the pr variable in the environment
+#    if (pseudonymise) {
+#      pr_name <- paste("Organisation", organisation_codes[which(organisation_codes$Prov_Code ==  pr_elt),"pseudoid"][[1]], sep=" ")
+#    } else {
+#      pr_name <- ed_los_data[which(ed_los_data$Der_Provider_Code == pr_elt),"Provider_Name"][[1]]
+#      }
+    
+    
+    env=new.env() #create a new empty environment, it inherits objects from the current environment.
+    out <- c(out, knit_child('section_header_nonewpage.Rmd', envir=env))
+    #cat("  \n")
+    
+    env=new.env() #create a new empty environment, it inherits objects from the current environment.
+    out <- c(out, knit_child('individual_sitrep.Rmd', envir=env))
+    cat("\\newpage")
+
+}
+```
+`r paste(out, collapse='\n')`

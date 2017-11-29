@@ -1,0 +1,21 @@
+---
+title: "Individual Performance Over Time"
+author: "Dr Tom Woodcock"
+date: "20 May 2017"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+## Performance over time
+```{r eval=TRUE, echo=FALSE, fig.height=4.5, fig.width=7, tidy=FALSE, message=FALSE, warning=FALSE}
+
+
+#start.date = perf.start.date, end.date = perf.end.date, brk.date = perf.brk.date,
+tryCatch(plot_performance(sitrep_perf, prov_codes = pr, start.date = perf.start.date, end.date = perf.end.date, brk.date = perf.brk.date, dept_types = NA, date.col = 'Month_Start'), error=function(e) NULL)
+
+tryCatch(plot_volume(sitrep_perf, prov_codes = pr, start.date = perf.start.date, end.date = perf.end.date, brk.date = perf.brk.date, dept_types = NA, date.col = 'Month_Start'), error=function(e) NULL)
+
+cat("  \n")
+
+```
