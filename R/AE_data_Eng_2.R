@@ -155,7 +155,7 @@ get_date <- function(raw_data) {
   #Find the cell specifying the period and extract the text
   date_chr <- raw_data %>% filter(X__1 == "Period:") %>%
     pull(X__2)
-  lubridate::myd(paste(date_chr,'1st',sep=' '))
+  lubridate::myd(paste(date_chr,'1st',sep=' '), tz = "Europe/London")
   
 }
 
@@ -196,6 +196,9 @@ make_p4h_from_sitreps <- function(AE_data) {
   
   # Remove redundant key column
   df$key <- NULL
+  
+  # Convert to date
+  df$Month_Start <- as.Date(df$Month_Start)
   
   df
 }
