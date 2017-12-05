@@ -16,14 +16,14 @@ library(reshape2)
 library(qicharts)
 library(tidyr)
 library(scales)
-knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, fig.path = 'perf_images/')
 opts_chunk$set(dev="png", 
                dev.args=list(type="cairo"),
                dpi=120)
 ```
 
 ```{r echo=FALSE, eval=TRUE, include=FALSE}
-pseudonymise = FALSE
+pseudonymise = TRUE
 
 # Select time periods for analysis
 perf.start.date <- "2014-02-01"
@@ -90,7 +90,7 @@ The aim of piece of work is to highlight these features to help inform each orga
 ## Limitations
 This analysis uses Secondary Uses Service (SUS) data, more details are available here: http://content.digital.nhs.uk/sus. This data may show differences from that available locally, and from other reported sources of information. These differences are in part down to the way that the data is cleaned, but also due to historic changes in the way this data is reported. For example in some of the volume analyses it is clear organisations have merged, with large jumps in volume of attendances and admissions. These mergers and organisational changes may be reflected differently in other analyses of similar data. We encourage members of the collaborative to review this data against local analyses and contact the collaborative team if they believe the two to be significantly different for more recent time periods.
 
-```{r echo=FALSE, eval=TRUE, include=FALSE}
+```{r combined-trusts, echo=FALSE, eval=TRUE, include=FALSE}
 pr<-providerCodes
 pr_name <- "Combined Trusts"
 
@@ -105,7 +105,8 @@ pr_name <- "Combined Trusts"
     env=new.env() #create a new empty environment, it inherits objects from the current environment.
     out <- c(out, knit_child('individual_performance_over_time.Rmd', envir=env))
     cat("\\newpage")
-
+```
+```{r individual-orgs, echo=FALSE, eval=TRUE, include=FALSE}
 all_provs <- FALSE
 
 for(pr_elt in providerCodes){

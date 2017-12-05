@@ -8,7 +8,7 @@ output:
 ---
 
 ## Performance over time
-```{r eval=TRUE, echo=FALSE, fig.height=4.5, fig.width=7, tidy=FALSE, message=FALSE, warning=FALSE}
+```{r perf4h{{pr}}, eval=TRUE, echo=FALSE, fig.height=4.5, fig.width=7, tidy=FALSE, message=FALSE, warning=FALSE}
 
 
 #start.date = perf.start.date, end.date = perf.end.date, brk.date = perf.brk.date,

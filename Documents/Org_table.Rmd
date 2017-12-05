@@ -1,7 +1,7 @@
 ---
-title: "NHS England South Organisations"
+title: "NHS England London Trusts 4 Hour Performance Organisation Key"
 author: "Centre for Healthcare Improvement Research"
-date: "23 May 2017"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   pdf_document: default
 latex_engine: xelatex
