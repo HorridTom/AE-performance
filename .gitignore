@@ -38,8 +38,9 @@ packrat/src*/
 /data
 **/*.csv
 inst/doc
-# Documents
+# Documents and images
 /Documents/*.pdf
 /Documents/*_cache/
 /Documents/*_files/
 /Documents/data-raw/
+/Documents/**/*.png
